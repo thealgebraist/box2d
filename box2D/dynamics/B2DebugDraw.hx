@@ -27,7 +27,6 @@ import box2D.common.B2Color;
 import flash.display.Sprite;
 #end
 
-
 /**
 * Implement and register this class with a b2World to provide debug drawing of physics
 * entities in your game.
@@ -101,14 +100,26 @@ class B2DebugDraw
 	public function setSprite(sprite:Sprite) : Void {
 		m_sprite = sprite; 
 	}
+	#elseif js
+	public function setSprite(sprite:Dynamic) : Void {
+		m_sprite = sprite;
+	}
+	#end
 	
+
+	#if (openfl || flash || nme)
 	/**
 	* Get the sprite
 	*/
 	public function getSprite() : Sprite {
 		return m_sprite;
 	}
+	#elseif js
+	public function getSprite() : Dynamic {
+		return m_sprite;
+	}
 	#end
+	
 	
 	/**
 	* Set the draw scale
@@ -193,14 +204,26 @@ class B2DebugDraw
 		}
 		m_sprite.graphics.lineTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
 		#end
-		
+
+		#if js
+		m_sprite.strokeStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+		m_sprite.lineWidth = m_lineThickness;
+		m_sprite.globalAlpha = m_alpha;
+		m_sprite.beginPath();
+		m_sprite.moveTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
+		for (i in 1...vertexCount){
+				m_sprite.lineTo(vertices[i].x * m_drawScale, vertices[i].y * m_drawScale);
+		}
+		m_sprite.lineTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
+
+		m_sprite.closePath();
+		#end
 	}
 
 	/**
 	* Draw a solid closed polygon provided in CCW order.
 	*/
 	public function drawSolidPolygon(vertices:Array <B2Vec2>, vertexCount:Int, color:B2Color) : Void{
-		
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha);
 		m_sprite.graphics.moveTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
@@ -210,6 +233,22 @@ class B2DebugDraw
 		}
 		m_sprite.graphics.lineTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
 		m_sprite.graphics.endFill();
+		#end
+
+		#if js
+		
+		m_sprite.fillStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+		m_sprite.lineWidth = m_lineThickness;
+		m_sprite.globalAlpha = m_alpha;
+		m_sprite.beginPath();
+		m_sprite.moveTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
+		for (i in 1...vertexCount){
+				m_sprite.lineTo(vertices[i].x * m_drawScale, vertices[i].y * m_drawScale);
+		}
+		m_sprite.lineTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
+
+		m_sprite.closePath();
+		m_sprite.fill();
 		#end
 		
 	}
@@ -222,6 +261,16 @@ class B2DebugDraw
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha);
 		m_sprite.graphics.drawCircle(center.x * m_drawScale, center.y * m_drawScale, radius * m_drawScale);
+		#end
+
+		#if js
+		m_sprite.strokeStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+		m_sprite.lineWidth = m_lineThickness;
+		m_sprite.globalAlpha = m_alpha;
+
+		m_sprite.beginPath();
+		m_sprite.arc(100,75,50,0,2*Math.PI);
+		m_sprite.stroke();
 		#end
 		
 	}
@@ -240,6 +289,17 @@ class B2DebugDraw
 		m_sprite.graphics.moveTo(center.x * m_drawScale, center.y * m_drawScale);
 		m_sprite.graphics.lineTo((center.x + axis.x * radius) * m_drawScale, (center.y + axis.y * radius) * m_drawScale);
 		#end
+
+		#if js
+		m_sprite.fillStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
+		m_sprite.lineWidth = m_lineThickness;
+		m_sprite.globalAlpha = m_alpha;
+
+		m_sprite.beginPath();
+		m_sprite.arc(100,75,50,0,2*Math.PI);
+		m_sprite.stroke();
+		m_sprite.fill();
+		#end
 		
 	}
 
@@ -248,11 +308,20 @@ class B2DebugDraw
 	* Draw a line segment.
 	*/
 	public function drawSegment(p1:B2Vec2, p2:B2Vec2, color:B2Color) : Void{
-		
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha);
 		m_sprite.graphics.moveTo(p1.x * m_drawScale, p1.y * m_drawScale);
 		m_sprite.graphics.lineTo(p2.x * m_drawScale, p2.y * m_drawScale);
+		#end
+
+		#if js
+		m_sprite.strokeStyle = "rgb(255," + color.g + "," + color.b + ")";
+		m_sprite.lineWidth = m_lineThickness;
+		m_sprite.globalAlpha = m_alpha;
+		m_sprite.beginPath();
+		m_sprite.moveTo(p1.x * m_drawScale, p1.y * m_drawScale);
+		m_sprite.lineTo(p2.x * m_drawScale, p2.y * m_drawScale);
+		m_sprite.stroke();
 		#end
 		
 	}
@@ -272,15 +341,30 @@ class B2DebugDraw
 		m_sprite.graphics.moveTo(xf.position.x * m_drawScale, xf.position.y * m_drawScale);
 		m_sprite.graphics.lineTo((xf.position.x + m_xformScale * xf.R.col2.x) * m_drawScale, (xf.position.y + m_xformScale * xf.R.col2.y) * m_drawScale);
 		#end
-		
+
+		#if js
+		m_sprite.lineWidth = m_lineThickness;
+		m_sprite.globalAlpha = m_alpha;
+
+		m_sprite.moveTo(xf.position.x * m_drawScale, xf.position.y * m_drawScale);
+		m_sprite.lineTo((xf.position.x + m_xformScale*xf.R.col1.x) * m_drawScale, (xf.position.y + m_xformScale*xf.R.col1.y) * m_drawScale);
+		m_sprite.beginPath();
+		m_sprite.moveTo(xf.position.x * m_drawScale, xf.position.y * m_drawScale);
+		m_sprite.lineTo((xf.position.x + m_xformScale * xf.R.col2.x) * m_drawScale, (xf.position.y + m_xformScale * xf.R.col2.y) * m_drawScale);
+		m_sprite.stroke();
+		#end
 	}
+
 	
 	
 	
 	private var m_drawFlags:Int;
 	#if (openfl || flash || nme)
 	public var m_sprite:Sprite;
+	#elseif js
+	public var m_sprite:Dynamic;
 	#end
+
 	private var m_drawScale:Float;
 	
 	private var m_lineThickness:Float;
