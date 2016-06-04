@@ -20,22 +20,21 @@ package box2D.dynamics.controllers;
 
 
 import box2D.dynamics.B2Body;
-//import box2D.dynamics.B2DebugDraw;
 import box2D.dynamics.B2TimeStep;
 import box2D.dynamics.B2World;
 
-	
+
 /**
  * Base class for controllers. Controllers are a convience for encapsulating common
  * per-step functionality.
  */
-class B2Controller 
+class B2Controller
 {
 	public function step(step:B2TimeStep):Void {}
-		
+
 	public function draw():Void { }
-	
-	public function addBody(body:B2Body) : Void 
+
+	public function addBody(body:B2Body) : Void
 	{
 		var edge:B2ControllerEdge = new B2ControllerEdge();
 		edge.controller = this;
@@ -55,16 +54,16 @@ class B2Controller
 			edge.nextController.prevController = edge;
 		body.m_controllerCount++;
 	}
-	
+
 	public function removeBody(body:B2Body) : Void
 	{
 		var edge:B2ControllerEdge = body.m_controllerList;
 		while (edge != null && edge.controller != this)
 			edge = edge.nextController;
-			
+
 		//Attempted to remove a body that was not attached?
 		//b2Settings.b2Assert(bEdge != null);
-		
+
 		if (edge.prevBody != null)
 			edge.prevBody.nextBody = edge.nextBody;
 		if (edge.nextBody != null)
@@ -82,26 +81,26 @@ class B2Controller
 		//b2Settings.b2Assert(body.m_controllerCount >= 0);
 		//b2Settings.b2Assert(m_bodyCount >= 0);
 	}
-	
+
 	public function clear():Void
 	{
 		while (m_bodyList != null)
 			removeBody(m_bodyList.body);
 	}
-	
+
 	public function getNext():B2Controller{return m_next;}
 	public function getWorld():B2World { return m_world; }
-	
+
 	public function getBodyList() : B2ControllerEdge
 	{
 		return m_bodyList;
 	}
-	
+
 	public var m_next:B2Controller;
 	public var m_prev:B2Controller;
-	
+
 	public var m_bodyList:B2ControllerEdge;
 	public var m_bodyCount:Int = 0;
-	
+
 	public var m_world:B2World;
 }

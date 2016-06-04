@@ -69,10 +69,10 @@ class B2BuoyancyController extends B2Controller
 	 * Gravity vector, if the world's gravity is not used
 	 */
 	public var gravity:B2Vec2;
-	
-	
+
+
 	public function new () {
-		
+
 		normal = new B2Vec2(0,-1);
 		offset = 0;
 		density = 0;
@@ -82,10 +82,10 @@ class B2BuoyancyController extends B2Controller
 		useDensity = false;
 		useWorldGravity = true;
 		gravity = null;
-		
+
 	}
-	
-		
+
+
 	public override function step(step:B2TimeStep):Void{
 		if(m_bodyList == null)
 			return;
@@ -147,19 +147,20 @@ class B2BuoyancyController extends B2Controller
 			i = i.nextBody;
 		}
 	}
-	
-	public override function draw(debugDraw:B2DebugDraw):Void
-	{
-		var r:Float = 1000;
-		//Would like to draw a semi-transparent box
-		//But debug draw doesn't support that
-		var p1:B2Vec2 = new B2Vec2();
-		var p2:B2Vec2 = new B2Vec2();
-		p1.x = normal.x * offset + normal.y * r;
-		p1.y = normal.y * offset - normal.x * r;
-		p2.x = normal.x * offset - normal.y * r;
-		p2.y = normal.y * offset + normal.x * r;
-		var color:B2Color = new B2Color(0,0,1);
-		debugDraw.drawSegment(p1,p2,color);
-	}
+
+	// public override function draw(debugDraw:B2DebugDraw):Void
+	// {
+	// 	var r:Float = 1000;
+	// 	//Would like to draw a semi-transparent box
+	// 	//But debug draw doesn't support that
+	// 	var p1:B2Vec2 = new B2Vec2();
+	// 	var p2:B2Vec2 = new B2Vec2();
+	// 	p1.x = normal.x * offset + normal.y * r;
+	// 	p1.y = normal.y * offset - normal.x * r;
+	// 	p2.x = normal.x * offset - normal.y * r;
+	// 	p2.y = normal.y * offset + normal.x * r;
+	// 	var color:B2Color = new B2Color(0,0,1);
+	// 	debugDraw.drawSegment(p1,p2,color);
+	// }
+
 }
