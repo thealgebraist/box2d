@@ -41,7 +41,7 @@ import box2D.common.math.B2Vec2;
 */
 class B2Shape
 {
-	
+
 	/**
 	 * Clone the shape
 	 */
@@ -52,7 +52,7 @@ class B2Shape
 		//return s;
 		return null; // Abstract type
 	}
-	
+
 	/**
 	 * Assign the properties of anther shape to this
 	 */
@@ -62,7 +62,7 @@ class B2Shape
 		//m_type = other.m_type;
 		m_radius = other.m_radius;
 	}
-	
+
 	/**
 	* Get the type of this shape. You can use this to down cast to the concrete shape.
 	* @return the shape type.
@@ -103,7 +103,7 @@ class B2Shape
 	* @param massData returns the mass data for this shape.
 	*/
 	public function computeMass(massData:B2MassData, density:Float) : Void { }
-	
+
 	/**
 	 * Compute the volume and centroid of this shape intersected with a half plane
 	 * @param normal the surface normal
@@ -117,12 +117,12 @@ class B2Shape
 				offset:Float,
 				xf:B2Transform,
 				c:B2Vec2):Float { return 0; }
-				
+
 	public static function testOverlap(shape1:B2Shape, transform1:B2Transform, shape2:B2Shape, transform2:B2Transform):Bool
 	{
 		// This seems to greatly improve performance on some platforms, without negative effects
 		//return true;
-		
+
 		var input:B2DistanceInput = new B2DistanceInput ();
 		input.proxyA = new B2DistanceProxy ();
 		input.proxyA.set(shape1);
@@ -137,7 +137,7 @@ class B2Shape
 		B2Distance.distance(output, simplexCache, input);
 		return output.distance  < 10.0 * B2Math.MIN_VALUE;
 	}
-	
+
 	//--------------- Internals Below -------------------
 	/**
 	 * @private
@@ -147,12 +147,12 @@ class B2Shape
 		m_type = B2ShapeType.UNKNOWN_SHAPE;
 		m_radius = B2Settings.b2_linearSlop;
 	}
-	
+
 	//virtual ~b2Shape();
-	
+
 	public var m_type:B2ShapeType;
 	public var m_radius:Float;
-	
+
 	/**
 	* The various collision shape types supported by Box2D.
 	*/
@@ -164,7 +164,7 @@ class B2Shape
 		//static public var e_edgeShape:Int =       2;
 		//static public var e_shapeTypeCount:Int = 	3;
 	//};
-	
+
 	/**
 	 * Possible return values for TestSegment
 	 */

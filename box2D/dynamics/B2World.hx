@@ -65,7 +65,6 @@ class B2World
 		m_island = new B2Island();
 		
 		m_destructionListener = null;
-		m_debugDraw = null;
 		
 		m_bodyList = null;
 		m_contactList = null;
@@ -120,14 +119,6 @@ class B2World
 		m_contactManager.m_contactListener = listener;
 	}
 
-	/**
-	* Register a routine for debug drawing. The debug draw functions are called
-	* inside the b2World::Step method, so make sure your renderer is ready to
-	* consume draw commands when you call Step().
-	*/
-	public function setDebugDraw(debugDraw:B2DebugDraw) : Void{
-		m_debugDraw = debugDraw;
-	}
 	
 	/**
 	 * Use the given object as a broadphase.
@@ -637,160 +628,6 @@ class B2World
 	}
 	
 	static private var s_xf:B2Transform = new B2Transform();
-	/**
-	 * Call this to draw shapes and other debug draw data.
-	 */
-	public function drawDebugData() : Void{
-		
-		if (m_debugDraw == null)
-		{
-			return;
-		}
-		
-		#if (openfl || flash || nme)
-		m_debugDraw.m_sprite.graphics.clear();
-		#end
-		
-		var flags:Int = m_debugDraw.getFlags();
-		
-		var i:Int;
-		var b:B2Body;
-		var f:B2Fixture;
-		var s:B2Shape;
-		var j:B2Joint;
-		var bp:IBroadPhase;
-		var invQ:B2Vec2 = new B2Vec2 ();
-		var x1:B2Vec2 = new B2Vec2 ();
-		var x2:B2Vec2 = new B2Vec2 ();
-		var xf:B2Transform;
-		var b1:B2AABB = new B2AABB();
-		var b2:B2AABB = new B2AABB();
-		var vs:Array <B2Vec2> = [new B2Vec2(), new B2Vec2(), new B2Vec2(), new B2Vec2()];
-		
-		// Store color here and reuse, to reduce allocations
-		var color:B2Color = new B2Color(0, 0, 0);
-			
-		if ((flags & B2DebugDraw.e_shapeBit) != 0)
-		{
-			b = m_bodyList;
-			while (b != null)
-			{
-				xf = b.m_xf;
-				f = b.getFixtureList();
-				while (f != null)
-				{
-					s = f.getShape();
-					if (b.isActive() == false)
-					{
-						color.set(0.5, 0.5, 0.3);
-						drawShape(s, xf, color);
-					}
-					else if (b.getType() == STATIC_BODY)
-					{
-						color.set(0.5, 0.9, 0.5);
-						drawShape(s, xf, color);
-					}
-					else if (b.getType() == KINEMATIC_BODY)
-					{
-						color.set(0.5, 0.5, 0.9);
-						drawShape(s, xf, color);
-					}
-					else if (b.isAwake() == false)
-					{
-						color.set(0.6, 0.6, 0.6);
-						drawShape(s, xf, color);
-					}
-					else
-					{
-						color.set(0.9, 0.7, 0.7);
-						drawShape(s, xf, color);
-					}
-					f = f.m_next;
-				}
-				b = b.m_next;
-			}
-		}
-		
-		if ((flags & B2DebugDraw.e_jointBit) != 0)
-		{
-			j = m_jointList;
-			while (j != null)
-			{
-				drawJoint(j);
-				j = j.m_next;
-			}
-		}
-		
-		if ((flags & B2DebugDraw.e_controllerBit) != 0)
-		{
-			var c:B2Controller = m_controllerList;
-			while (c != null)
-			{
-				c.draw(m_debugDraw);
-				c = c.m_next;
-			}
-		}
-		
-		if ((flags & B2DebugDraw.e_pairBit) != 0)
-		{
-			color.set(0.3, 0.9, 0.9);
-			var contact:B2Contact = m_contactManager.m_contactList;
-			while (contact != null)
-			{
-				var fixtureA:B2Fixture = contact.getFixtureA();
-				var fixtureB:B2Fixture = contact.getFixtureB();
-
-				var cA:B2Vec2 = fixtureA.getAABB().getCenter();
-				var cB:B2Vec2 = fixtureB.getAABB().getCenter();
-
-				m_debugDraw.drawSegment(cA, cB, color);
-				contact = contact.getNext();
-			}
-		}
-		
-		if ((flags & B2DebugDraw.e_aabbBit) != 0)
-		{
-			bp = m_contactManager.m_broadPhase;
-			
-			vs = [new B2Vec2(),new B2Vec2(),new B2Vec2(),new B2Vec2()];
-			
-			b= m_bodyList;
-			while (b != null)
-			{
-				if (b.isActive() == false)
-				{
-					b = b.getNext();
-					continue;
-				}
-				f = b.getFixtureList();
-				while (f != null)
-				{
-					var aabb:B2AABB = bp.getFatAABB(f.m_proxy);
-					vs[0].set(aabb.lowerBound.x, aabb.lowerBound.y);
-					vs[1].set(aabb.upperBound.x, aabb.lowerBound.y);
-					vs[2].set(aabb.upperBound.x, aabb.upperBound.y);
-					vs[3].set(aabb.lowerBound.x, aabb.upperBound.y);
-
-					m_debugDraw.drawPolygon(vs, 4, color);
-					f = f.getNext();
-				}
-				b = b.getNext();
-			}
-		}
-		
-		if ((flags & B2DebugDraw.e_centerOfMassBit) != 0)
-		{
-			b = m_bodyList;
-			while (b != null)
-			{
-				xf = s_xf;
-				xf.R = b.m_xf.R;
-				xf.position = b.getWorldCenter();
-				m_debugDraw.drawTransform(xf);
-				b = b.m_next;
-			}
-		}
-	}
 
 	/**
 	 * Query the world for all fixtures that potentially overlap the
@@ -1574,27 +1411,17 @@ class B2World
 		switch (joint.m_type)
 		{
 		case DISTANCE_JOINT:
-			m_debugDraw.drawSegment(p1, p2, color);
 		
 		case PULLEY_JOINT:
 			{
 				var pulley:B2PulleyJoint = cast (joint, B2PulleyJoint);
 				var s1:B2Vec2 = pulley.getGroundAnchorA();
 				var s2:B2Vec2 = pulley.getGroundAnchorB();
-				m_debugDraw.drawSegment(s1, p1, color);
-				m_debugDraw.drawSegment(s2, p2, color);
-				m_debugDraw.drawSegment(s1, s2, color);
 			}
 		
 		case MOUSE_JOINT:
-			m_debugDraw.drawSegment(p1, p2, color);
 		
 		default:
-			if (b1 != m_groundBody)
-				m_debugDraw.drawSegment(x1, p1, color);
-			m_debugDraw.drawSegment(p1, p2, color);
-			if (b2 != m_groundBody)
-				m_debugDraw.drawSegment(x2, p2, color);
 		}
 	}
 	
@@ -1610,7 +1437,6 @@ class B2World
 				var radius:Float = circle.m_radius;
 				var axis:B2Vec2 = xf.R.col1;
 				
-				m_debugDraw.drawSolidCircle(center, radius, axis, color);
 			}
 		
 		case B2ShapeType.POLYGON_SHAPE:
@@ -1627,14 +1453,12 @@ class B2World
 					vertices[i] = B2Math.mulX(xf, localVertices[i]);
 				}
 				
-				m_debugDraw.drawSolidPolygon(vertices, vertexCount, color);
 			}
 		
 		case B2ShapeType.EDGE_SHAPE:
 			{
 				var edge: B2EdgeShape = cast (shape, B2EdgeShape);
 				
-				m_debugDraw.drawSegment(B2Math.mulX(xf, edge.getVertex1()), B2Math.mulX(xf, edge.getVertex2()), color);
 				
 			}
 		default:
@@ -1667,12 +1491,10 @@ class B2World
 	public var m_groundBody:B2Body;
 
 	private var m_destructionListener:B2DestructionListener;
-	private var m_debugDraw:B2DebugDraw;
 
 	// This is used to compute the time step ratio to support a variable time step.
 	private var m_inv_dt0:Float;
 
-	// This is for debugging the solver.
 	static private var m_warmStarting:Bool;
 
 	// This is for debugging the solver.

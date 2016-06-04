@@ -38,14 +38,22 @@ import box2D.common.math.B2Vec2;
 
 class B2PolygonShape extends B2Shape
 {
-	public override function copy():B2Shape 
+	// Local position of the polygon centroid.
+	public var m_centroid:B2Vec2;
+
+	public var m_vertices:Array <B2Vec2>;
+	public var m_normals:Array <B2Vec2>;
+
+	public var m_vertexCount:Int = 0;
+
+	public override function copy():B2Shape
 	{
 		var s:B2PolygonShape = new B2PolygonShape();
 		s.set(this);
 		return s;
 	}
-	
-	public override function set(other:B2Shape):Void 
+
+	public override function set(other:B2Shape):Void
 	{
 		super.set(other);
 		if (Std.is (other, B2PolygonShape))
@@ -61,7 +69,7 @@ class B2PolygonShape extends B2Shape
 			}
 		}
 	}
-	
+
 	/**
 	 * Copy vertices. This assumes the vertices define a convex polygon.
 	 * It is assumed that the exterior is the the right of each edge.
@@ -75,14 +83,14 @@ class B2PolygonShape extends B2Shape
 		}
 		setAsVector(v, vertexCount);
 	}
-	
+
 	public static function asArray(vertices:Array <Dynamic>, vertexCount:Float):B2PolygonShape
 	{
 		var polygonShape:B2PolygonShape = new B2PolygonShape();
 		polygonShape.setAsArray(vertices, vertexCount);
 		return polygonShape;
 	}
-	
+
 	/**
 	 * Copy vertices. This assumes the vertices define a convex polygon.
 	 * It is assumed that the exterior is the the right of each edge.
@@ -91,20 +99,20 @@ class B2PolygonShape extends B2Shape
 	{
 		if (vertexCount == 0)
 			vertexCount = vertices.length;
-			
+
 		B2Settings.b2Assert(2 <= vertexCount);
 		m_vertexCount = Std.int (vertexCount);
-		
+
 		reserve(Std.int (vertexCount));
-		
+
 		var i:Int;
-		
+
 		// Copy vertices
 		for (i in 0...m_vertexCount)
 		{
 			m_vertices[i].setV(vertices[i]);
 		}
-		
+
 		// Compute normals. Ensure the edges have non-zero length.
 		for (i in 0...m_vertexCount)
 		{
@@ -119,20 +127,20 @@ class B2PolygonShape extends B2Shape
 		// Compute the polygon centroid
 		m_centroid = computeCentroid(m_vertices, m_vertexCount);
 	}
-	
+
 	public static function asVector(vertices:Array <B2Vec2>, vertexCount:Float):B2PolygonShape
 	{
 		var polygonShape:B2PolygonShape = new B2PolygonShape();
 		polygonShape.setAsVector(vertices, vertexCount);
 		return polygonShape;
 	}
-	
+
 	/**
 	* Build vertices to represent an axis-aligned box.
 	* @param hx the half-width.
 	* @param hy the half-height.
 	*/
-	public function setAsBox(hx:Float, hy:Float) : Void 
+	public function setAsBox(hx:Float, hy:Float) : Void
 	{
 		m_vertexCount = 4;
 		reserve(4);
@@ -146,14 +154,14 @@ class B2PolygonShape extends B2Shape
 		m_normals[3].set(-1.0, 0.0);
 		m_centroid.setZero();
 	}
-	
+
 	public static function asBox(hx:Float, hy:Float):B2PolygonShape
 	{
 		var polygonShape:B2PolygonShape = new B2PolygonShape();
 		polygonShape.setAsBox(hx, hy);
 		return polygonShape;
 	}
-	
+
 	/**
 	* Build vertices to represent an oriented box.
 	* @param hx the half-width.
@@ -187,14 +195,14 @@ class B2PolygonShape extends B2Shape
 			m_normals[i] = B2Math.mulMV(xf.R, m_normals[i]);
 		}
 	}
-	
+
 	public static function asOrientedBox(hx:Float, hy:Float, center:B2Vec2 = null, angle:Float = 0.0):B2PolygonShape
 	{
 		var polygonShape:B2PolygonShape = new B2PolygonShape();
 		polygonShape.setAsOrientedBox(hx, hy, center, angle);
 		return polygonShape;
 	}
-	
+
 	/**
 	 * Set this as a single edge.
 	 */
@@ -211,7 +219,7 @@ class B2PolygonShape extends B2Shape
 		m_normals[1].x = -m_normals[0].x;
 		m_normals[1].y = -m_normals[0].y;
 	}
-	
+
 	/**
 	 * Set this as a single edge.
 	 */
@@ -221,21 +229,21 @@ class B2PolygonShape extends B2Shape
 		polygonShape.setAsEdge(v1, v2);
 		return polygonShape;
 	}
-	
-	
+
+
 	/**
 	* @inheritDoc
 	*/
 	public override function testPoint(xf:B2Transform, p:B2Vec2) : Bool{
 		var tVec:B2Vec2;
-		
+
 		//b2Vec2 pLocal = b2MulT(xf.R, p - xf.position);
 		var tMat:B2Mat22 = xf.R;
 		var tX:Float = p.x - xf.position.x;
 		var tY:Float = p.y - xf.position.y;
 		var pLocalX:Float = (tX*tMat.col1.x + tY*tMat.col1.y);
 		var pLocalY:Float = (tX*tMat.col2.x + tY*tMat.col2.y);
-		
+
 		for (i in 0...m_vertexCount)
 		{
 			//float32 dot = b2Dot(m_normals[i], pLocal - m_vertices[i]);
@@ -249,7 +257,7 @@ class B2PolygonShape extends B2Shape
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -260,12 +268,12 @@ class B2PolygonShape extends B2Shape
 	{
 		var lower:Float = 0.0;
 		var upper:Float = input.maxFraction;
-		
+
 		var tX:Float;
 		var tY:Float;
 		var tMat:B2Mat22;
 		var tVec:B2Vec2;
-		
+
 		// Put the ray into the polygon's frame of reference. (AS3 Port Manual inlining follows)
 		//b2Vec2 p1 = b2MulT(transform.R, segment.p1 - transform.position);
 		tX = input.p1.x - transform.position.x;
@@ -283,13 +291,13 @@ class B2PolygonShape extends B2Shape
 		var dX:Float = p2X - p1X;
 		var dY:Float = p2Y - p1Y;
 		var index:Int = -1;
-		
+
 		for (i in 0...m_vertexCount)
 		{
 			// p = p1 + a * d
 			// dot(normal, p - v) = 0
 			// dot(normal, p1 - v) + a * dot(normal, d) = 0
-			
+
 			//float32 numerator = b2Dot(m_normals[i], m_vertices[i] - p1);
 			tVec = m_vertices[i];
 			tX = tVec.x - p1X;
@@ -298,7 +306,7 @@ class B2PolygonShape extends B2Shape
 			var numerator:Float = (tVec.x*tX + tVec.y*tY);
 			//float32 denominator = b2Dot(m_normals[i], d);
 			var denominator:Float = (tVec.x * dX + tVec.y * dY);
-			
+
 			if (denominator == 0.0)
 			{
 				if (numerator < 0.0)
@@ -326,15 +334,15 @@ class B2PolygonShape extends B2Shape
 					upper = numerator / denominator;
 				}
 			}
-			
+
 			if (upper < lower - B2Math.MIN_VALUE)
 			{
 				return false;
 			}
 		}
-		
+
 		//b2Settings.b2Assert(0.0 <= lower && lower <= input.maxLambda);
-		
+
 		if (index >= 0)
 		{
 			output.fraction = lower;
@@ -345,7 +353,7 @@ class B2PolygonShape extends B2Shape
 			output.normal.y = (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y);
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -362,7 +370,7 @@ class B2PolygonShape extends B2Shape
 		var lowerY:Float = xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y);
 		var upperX:Float = lowerX;
 		var upperY:Float = lowerY;
-		
+
 		for (i in 1...m_vertexCount)
 		{
 			tVec = m_vertices[i];
@@ -408,9 +416,9 @@ class B2PolygonShape extends B2Shape
 		// Simplification: triangle centroid = (1/3) * (p1 + p2 + p3)
 		//
 		// The rest of the derivation is handled by computer algebra.
-		
+
 		//b2Settings.b2Assert(m_vertexCount >= 2);
-		
+
 		// A line segment has zero mass.
 		if (m_vertexCount == 2)
 		{
@@ -420,13 +428,13 @@ class B2PolygonShape extends B2Shape
 			massData.I = 0.0;
 			return;
 		}
-		
+
 		//b2Vec2 center; center.Set(0.0f, 0.0f);
 		var centerX:Float = 0.0;
 		var centerY:Float = 0.0;
 		var area:Float = 0.0;
 		var I:Float = 0.0;
-		
+
 		// pRef is the reference point for forming triangles.
 		// It's location doesn't change the result (except for rounding error).
 		//b2Vec2 pRef(0.0f, 0.0f);
@@ -440,9 +448,9 @@ class B2PolygonShape extends B2Shape
 		}
 		pRef *= 1.0f / count;
 		#endif*/
-		
+
 		var k_inv3:Float = 1.0 / 3.0;
-		
+
 		for (i in 0...m_vertexCount)
 		{
 			// Triangle vertices.
@@ -452,26 +460,26 @@ class B2PolygonShape extends B2Shape
 			var p2:B2Vec2 = m_vertices[i];
 			//b2Vec2 p3 = i + 1 < m_vertexCount ? m_vertices[i+1] : m_vertices[0];
 			var p3:B2Vec2 = i + 1 < m_vertexCount ? m_vertices[Std.int(i+1)] : m_vertices[0];
-			
+
 			//b2Vec2 e1 = p2 - p1;
 			var e1X:Float = p2.x - p1X;
 			var e1Y:Float = p2.y - p1Y;
 			//b2Vec2 e2 = p3 - p1;
 			var e2X:Float = p3.x - p1X;
 			var e2Y:Float = p3.y - p1Y;
-			
+
 			//float32 D = b2Cross(e1, e2);
 			var D:Float = e1X * e2Y - e1Y * e2X;
-			
+
 			//float32 triangleArea = 0.5f * D;
 			var triangleArea:Float = 0.5 * D;
 			area += triangleArea;
-			
+
 			// Area weighted centroid
 			//center += triangleArea * k_inv3 * (p1 + p2 + p3);
 			centerX += triangleArea * k_inv3 * (p1X + p2.x + p3.x);
 			centerY += triangleArea * k_inv3 * (p1Y + p2.y + p3.y);
-			
+
 			//float32 px = p1.x, py = p1.y;
 			var px:Float = p1X;
 			var py:Float = p1Y;
@@ -481,18 +489,18 @@ class B2PolygonShape extends B2Shape
 			//float32 ex2 = e2.x, ey2 = e2.y;
 			var ex2:Float = e2X;
 			var ey2:Float = e2Y;
-			
+
 			//float32 intx2 = k_inv3 * (0.25f * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5f*px*px;
 			var intx2:Float = k_inv3 * (0.25 * (ex1*ex1 + ex2*ex1 + ex2*ex2) + (px*ex1 + px*ex2)) + 0.5*px*px;
 			//float32 inty2 = k_inv3 * (0.25f * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5f*py*py;
 			var inty2:Float = k_inv3 * (0.25 * (ey1*ey1 + ey2*ey1 + ey2*ey2) + (py*ey1 + py*ey2)) + 0.5*py*py;
-			
+
 			I += D * (intx2 + inty2);
 		}
-		
+
 		// Total mass
 		massData.mass = density * area;
-		
+
 		// Center of mass
 		//b2Settings.b2Assert(area > Number.MIN_VALUE);
 		//center *= 1.0f / area;
@@ -500,7 +508,7 @@ class B2PolygonShape extends B2Shape
 		centerY *= 1.0 / area;
 		//massData->center = center;
 		massData.center.set(centerX, centerY);
-		
+
 		// Inertia tensor relative to the local origin.
 		massData.I = density * I;
 	}
@@ -517,12 +525,12 @@ class B2PolygonShape extends B2Shape
 		// Transform plane into shape co-ordinates
 		var normalL:B2Vec2 = B2Math.mulTMV(xf.R, normal);
 		var offsetL:Float = offset - B2Math.dot(normal, xf.position);
-		
+
 		var depths:Array <Float> = new Array <Float>();
 		var diveCount:Int = 0;
 		var intoIndex:Int = -1;
 		var outoIndex:Int = -1;
-		
+
 		var lastSubmerged:Bool = false;
 		var i:Int;
 		for (i in 0...m_vertexCount)
@@ -566,7 +574,7 @@ class B2PolygonShape extends B2Shape
 				//Completely dry
 				return 0;
 			}
-			
+
 			case 1:
 			if (intoIndex == -1)
 			{
@@ -576,24 +584,24 @@ class B2PolygonShape extends B2Shape
 			{
 				outoIndex = m_vertexCount - 1;
 			}
-			
+
 		}
 		var intoIndex2:Int = (intoIndex + 1) % m_vertexCount;
 		var outoIndex2:Int = (outoIndex + 1) % m_vertexCount;
 		var intoLamdda:Float = (0 - depths[intoIndex]) / (depths[intoIndex2] - depths[intoIndex]);
 		var outoLamdda:Float = (0 - depths[outoIndex]) / (depths[outoIndex2] - depths[outoIndex]);
-		
+
 		var intoVec:B2Vec2 = new B2Vec2(m_vertices[intoIndex].x * (1 - intoLamdda) + m_vertices[intoIndex2].x * intoLamdda,
 										m_vertices[intoIndex].y * (1 - intoLamdda) + m_vertices[intoIndex2].y * intoLamdda);
 		var outoVec:B2Vec2 = new B2Vec2(m_vertices[outoIndex].x * (1 - outoLamdda) + m_vertices[outoIndex2].x * outoLamdda,
 										m_vertices[outoIndex].y * (1 - outoLamdda) + m_vertices[outoIndex2].y * outoLamdda);
-										
+
 		// Initialize accumulator
 		var area:Float = 0;
 		var center:B2Vec2 = new B2Vec2();
 		var p2:B2Vec2 = m_vertices[intoIndex2];
 		var p3:B2Vec2;
-		
+
 		// An awkward loop from intoIndex2+1 to outIndex2
 		i = intoIndex2;
 		while (i != outoIndex2)
@@ -603,23 +611,23 @@ class B2PolygonShape extends B2Shape
 				p3 = outoVec
 			else
 				p3 = m_vertices[i];
-			
+
 			var triangleArea:Float = 0.5 * ( (p2.x - intoVec.x) * (p3.y - intoVec.y) - (p2.y - intoVec.y) * (p3.x - intoVec.x) );
 			area += triangleArea;
 			// Area weighted centroid
 			center.x += triangleArea * (intoVec.x + p2.x + p3.x) / 3;
 			center.y += triangleArea * (intoVec.y + p2.y + p3.y) / 3;
-			
+
 			p2 = p3;
 		}
-		
+
 		//Normalize and transform centroid
 		center.multiply(1 / area);
 		c.setV(B2Math.mulX(xf, center));
-		
+
 		return area;
 	}
-	
+
 	/**
 	* Get the vertex count.
 	*/
@@ -633,7 +641,7 @@ class B2PolygonShape extends B2Shape
 	public function getVertices() : Array <B2Vec2>{
 		return m_vertices;
 	}
-	
+
 	/**
 	* Get the edge normal vectors. There is one for each vertex.
 	*/
@@ -641,7 +649,7 @@ class B2PolygonShape extends B2Shape
 	{
 		return m_normals;
 	}
-	
+
 	/**
 	 * Get the supporting vertex index in the given direction.
 	 */
@@ -660,7 +668,7 @@ class B2PolygonShape extends B2Shape
 		}
 		return bestIndex;
 	}
-	
+
 	public function getSupportVertex(d:B2Vec2):B2Vec2
 	{
 		var bestIndex:Int = 0;
@@ -691,22 +699,22 @@ class B2PolygonShape extends B2Shape
 				{
 					continue;
 				}
-				
+
 				// Your polygon is non-convex (it has an indentation).
 				// Or your polygon is too skinny.
 				float32 s = b2Dot(m_normals[i], m_vertices[j] - m_vertices[i]);
 				b2Assert(s < -b2_linearSlop);
 			}
 		}
-		
+
 		// Ensure the polygon is counter-clockwise.
 		for (i = 1; i < m_vertexCount; ++i)
 		{
 			var cross:Float = b2Math.b2CrossVV(m_normals[int(i-1)], m_normals[i]);
-			
+
 			// Keep asinf happy.
 			cross = b2Math.b2Clamp(cross, -1.0, 1.0);
-			
+
 			// You have consecutive edges that are almost parallel on your polygon.
 			var angle:Float = Math.asin(cross);
 			//b2Assert(angle > b2_angularSlop);
@@ -716,22 +724,22 @@ class B2PolygonShape extends B2Shape
 		return false;
 	}
 	//--------------- Internals Below -------------------
-	
+
 	/**
 	 * @private
 	 */
 	public function new (){
-		
+
 		super ();
-		
+
 		//b2Settings.b2Assert(def.type == e_polygonShape);
 		m_type = B2ShapeType.POLYGON_SHAPE;
-		
+
 		m_centroid = new B2Vec2();
 		m_vertices = new Array <B2Vec2>();
 		m_normals = new Array <B2Vec2>();
 	}
-	
+
 	private function reserve(count:Int):Void
 	{
 		for (i in m_vertices.length...count)
@@ -741,16 +749,9 @@ class B2PolygonShape extends B2Shape
 		}
 	}
 
-	// Local position of the polygon centroid.
-	public var m_centroid:B2Vec2;
 
-	public var m_vertices:Array <B2Vec2>;
-	public var m_normals:Array <B2Vec2>;
-	
-	public var m_vertexCount:Int = 0;
-	
-	
-	
+
+
 	/**
 	 * Computes the centroid of the given polygon
 	 * @param	vs		vector of b2Vec specifying a polygon
@@ -760,19 +761,19 @@ class B2PolygonShape extends B2Shape
 	static public function computeCentroid(vs:Array <B2Vec2>, count:Int) : B2Vec2
 	{
 		//b2Settings.b2Assert(count >= 3);
-		
+
 		//b2Vec2 c; c.Set(0.0f, 0.0f);
 		var c:B2Vec2 = new B2Vec2();
 		var area:Float = 0.0;
-		
+
 		// pRef is the reference point for forming triangles.
 		// It's location doesn't change the result (except for rounding error).
 		//b2Vec2 pRef(0.0f, 0.0f);
 		var p1X:Float = 0.0;
 		var p1Y:Float = 0.0;
-		
+
 		var inv3:Float = 1.0 / 3.0;
-		
+
 		for (i in 0...count)
 		{
 			// Triangle vertices.
@@ -782,27 +783,27 @@ class B2PolygonShape extends B2Shape
 			var p2:B2Vec2 = vs[i];
 			//b2Vec2 p3 = i + 1 < count ? vs[i+1] : vs[0];
 			var p3:B2Vec2 = i + 1 < count ? vs[Std.int(i+1)] : vs[0];
-			
+
 			//b2Vec2 e1 = p2 - p1;
 			var e1X:Float = p2.x - p1X;
 			var e1Y:Float = p2.y - p1Y;
 			//b2Vec2 e2 = p3 - p1;
 			var e2X:Float = p3.x - p1X;
 			var e2Y:Float = p3.y - p1Y;
-			
+
 			//float32 D = b2Cross(e1, e2);
 			var D:Float = (e1X * e2Y - e1Y * e2X);
-			
+
 			//float32 triangleArea = 0.5f * D;
 			var triangleArea:Float = 0.5 * D;
 			area += triangleArea;
-			
+
 			// Area weighted centroid
 			//c += triangleArea * inv3 * (p1 + p2 + p3);
 			c.x += triangleArea * inv3 * (p1X + p2.x + p3.x);
 			c.y += triangleArea * inv3 * (p1Y + p2.y + p3.y);
 		}
-		
+
 		// Centroid
 		//beSettings.b2Assert(area > Number.MIN_VALUE);
 		//c *= 1.0 / area;
@@ -824,9 +825,9 @@ class B2PolygonShape extends B2Shape
 			p[i] = vs[i];
 		}
 		p[count] = p[0];
-		
+
 		var minArea:Float = B2Math.MAX_VALUE;
-		
+
 		for (i in 1...(count + 1))
 		{
 			var root:B2Vec2 = p[Std.int(i-1)];
@@ -847,7 +848,7 @@ class B2PolygonShape extends B2Shape
 			//b2Vec2 upper(-FLT_MAX, -FLT_MAX);
 			var upperX:Float = -B2Math.MAX_VALUE;
 			var upperY:Float = -B2Math.MAX_VALUE;
-			
+
 			for (j in 0...count)
 			{
 				//b2Vec2 d = p[j] - root;
@@ -865,7 +866,7 @@ class B2PolygonShape extends B2Shape
 				if (rX > upperX) upperX = rX;
 				if (rY > upperY) upperY = rY;
 			}
-			
+
 			var area:Float = (upperX - lowerX) * (upperY - lowerY);
 			if (area < 0.95 * minArea)
 			{
@@ -888,9 +889,9 @@ class B2PolygonShape extends B2Shape
 				obb.extents.y = 0.5 * (upperY - lowerY);
 			}
 		}
-		
+
 		//b2Settings.b2Assert(minArea < Number.MAX_VALUE);
 	}
-	
-	
+
+
 }
