@@ -146,6 +146,9 @@ class B2Shape
 	{
 		m_type = B2ShapeType.UNKNOWN_SHAPE;
 		m_radius = B2Settings.b2_linearSlop;
+
+		id = counter;
+		counter+=1;
 	}
 
 	//virtual ~b2Shape();
@@ -174,4 +177,7 @@ class B2Shape
 		static public var e_missCollide:Int = 0;
 		/** Return value for TestSegment indicating that the segment starting point, p1, is already inside the shape. */
 		static public var e_startsInsideCollide:Int = -1;
+
+		public var id : Int;
+		static var counter = 0;
 }
