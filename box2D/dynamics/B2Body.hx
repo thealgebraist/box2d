@@ -42,6 +42,16 @@ import box2D.dynamics.joints.B2JointEdge;
 class B2Body
 {
 
+	public function forAllFixtures(f)
+	{
+		var fixture = m_fixtureList;
+		while (fixture!=null)
+		{
+			f(fixture);
+			fixture = fixture.getNext();
+		}
+	}
+
 	private function connectEdges(s1: B2EdgeShape, s2: B2EdgeShape, angle1: Float): Float
 	{
 		var angle2: Float = Math.atan2(s2.getDirectionVector().y, s2.getDirectionVector().x);
@@ -57,7 +67,7 @@ class B2Body
 		s2.setPrevEdge(s1, core, cornerDir, convex);
 		return angle2;
 	}
-	
+
 	/**
 	 * Creates a fixture and attach it to this body. Use this function if you need
 	 * to set some fixture parameters, like friction. Otherwise you can create the
@@ -73,7 +83,7 @@ class B2Body
 		{
 			return null;
 		}
-		
+
 		// TODO: Decide on a better place to initialize edgeShapes. (b2Shape::Create() can't
 		//       return more than one shape to add to parent body... maybe it should add
 		//       shapes directly to the body instead of returning them?)
@@ -83,7 +93,7 @@ class B2Body
 			var v1: B2Vec2;
 			var v2: B2Vec2;
 			var i: Int;
-			
+
 			if (edgeDef.isALoop) {
 				v1 = edgeDef.vertices[edgeDef.vertexCount-1];
 				i = 0;
@@ -91,14 +101,14 @@ class B2Body
 				v1 = edgeDef.vertices[0];
 				i = 1;
 			}
-			
+
 			var s0: B2EdgeShape = null;
 			var s1: B2EdgeShape = null;
 			var s2: B2EdgeShape = null;
 			var angle: Number = 0.0;
 			for (; i < edgeDef.vertexCount; i++) {
 				v2 = edgeDef.vertices[i];
-				
+
 				//void* mem = m_world->m_blockAllocator.Allocate(sizeof(b2EdgeShape));
 				s2 = new B2EdgeShape(v1, v2, def);
 				s2.m_next = m_shapeList;
@@ -107,7 +117,7 @@ class B2Body
 				s2.m_body = this;
 				s2.CreateProxy(m_world.m_broadPhase, m_xf);
 				s2.UpdateSweepRadius(m_sweep.localCenter);
-				
+
 				if (s1 == null) {
 					s0 = s2;
 					angle = Math.atan2(s2.GetDirectionVector().y, s2.GetDirectionVector().x);
@@ -120,33 +130,33 @@ class B2Body
 			if (edgeDef.isALoop) connectEdges(s1, s0, angle);
 			return s0;
 		}*/
-		
+
 		var fixture:B2Fixture = new B2Fixture();
 		fixture.create(this, m_xf, def);
-		
+
 		//if ( m_flags & e_activeFlag )
 		if ( (m_flags & e_activeFlag) != 0 )
 		{
 			var broadPhase:IBroadPhase = m_world.m_contactManager.m_broadPhase;
 			fixture.createProxy(broadPhase, m_xf);
 		}
-		
+
 		fixture.m_next = m_fixtureList;
 		m_fixtureList = fixture;
 		++m_fixtureCount;
-		
+
 		fixture.m_body = this;
-		
+
 		// Adjust mass properties if needed
 		if (fixture.m_density > 0.0)
 		{
 			resetMassData();
 		}
-		
+
 		// Let the world know we have a new fixture. This will cause new contacts to be created
 		// at the beginning of the next time step.
 		m_world.m_flags |= B2World.e_newFixture;
-		
+
 		return fixture;
 	}
 
@@ -164,10 +174,10 @@ class B2Body
 		var def:B2FixtureDef = new B2FixtureDef();
 		def.shape = shape;
 		def.density = density;
-		
+
 		return createFixture(def);
 	}
-	
+
 	/**
 	 * Destroy a fixture. This removes the fixture from the broad-phase and
 	 * destroys all contacts associated with this fixture. This will
@@ -183,7 +193,7 @@ class B2Body
 		{
 			return;
 		}
-		
+
 		//b2Settings.b2Assert(m_fixtureCount > 0);
 		//b2Fixture** node = &m_fixtureList;
 		var node:B2Fixture = m_fixtureList;
@@ -201,21 +211,21 @@ class B2Body
 				found = true;
 				break;
 			}
-			
+
 			ppF = node;
 			node = node.m_next;
 		}
-		
+
 		// You tried to remove a shape that is not attached to this body.
 		//b2Settings.b2Assert(found);
-		
+
 		// Destroy any contacts associated with the fixture.
 		var edge:B2ContactEdge = m_contactList;
 		while (edge != null)
 		{
 			var c:B2Contact = edge.contact;
 			edge = edge.next;
-			
+
 			var fixtureA:B2Fixture = c.getFixtureA();
 			var fixtureB:B2Fixture = c.getFixtureB();
 			if (fixture == fixtureA || fixture == fixtureB)
@@ -225,7 +235,7 @@ class B2Body
 				m_world.m_contactManager.destroy(c);
 			}
 		}
-		
+
 		//if ( m_flags & e_activeFlag )
 		if ( (m_flags & e_activeFlag) != 0)
 		{
@@ -236,13 +246,13 @@ class B2Body
 		{
 			//b2Assert(fixture->m_proxyId == b2BroadPhase::e_nullProxy);
 		}
-		
+
 		fixture.destroy();
 		fixture.m_body = null;
 		fixture.m_next = null;
-		
+
 		--m_fixtureCount;
-		
+
 		// Reset the mass data.
 		resetMassData();
 	}
@@ -255,18 +265,18 @@ class B2Body
 	* @param angle the new world rotation angle of the body in radians.
 	*/
 	public function setPositionAndAngle(position:B2Vec2, angle:Float) : Void{
-		
+
 		var f:B2Fixture;
-		
+
 		//b2Settings.b2Assert(m_world.IsLocked() == false);
 		if (m_world.isLocked() == true)
 		{
 			return;
 		}
-		
+
 		m_xf.R.set(angle);
 		m_xf.position.setV(position);
-		
+
 		//m_sweep.c0 = m_sweep.c = b2Mul(m_xf, m_sweep.localCenter);
 		//b2MulMV(m_xf.R, m_sweep.localCenter);
 		var tMat:B2Mat22 = m_xf.R;
@@ -280,9 +290,9 @@ class B2Body
 		m_sweep.c.y += m_xf.position.y;
 		//m_sweep.c0 = m_sweep.c
 		m_sweep.c0.setV(m_sweep.c);
-		
+
 		m_sweep.a0 = m_sweep.a = angle;
-		
+
 		var broadPhase:IBroadPhase = m_world.m_contactManager.m_broadPhase;
 		f = m_fixtureList;
 		while (f != null)
@@ -292,7 +302,7 @@ class B2Body
 		}
 		m_world.m_contactManager.findNewContacts();
 	}
-	
+
 	/**
 	 * Set the position of the body's origin and rotation (radians).
 	 * This breaks any contacts and wakes the other bodies.
@@ -320,7 +330,7 @@ class B2Body
 	public function getPosition() : B2Vec2{
 		return m_xf.position;
 	}
-	
+
 	/**
 	 * Setthe world body origin position.
 	 * @param position the new position of the body
@@ -337,7 +347,7 @@ class B2Body
 	public function getAngle() : Float{
 		return m_sweep.a;
 	}
-	
+
 	/**
 	 * Set the world body angle
 	 * @param angle the new angle of the body.
@@ -346,7 +356,7 @@ class B2Body
 	{
 		setPositionAndAngle(getPosition(), angle);
 	}
-	
+
 
 	/**
 	* Get the world position of the center of mass.
@@ -401,7 +411,7 @@ class B2Body
 	public function getAngularVelocity() : Float{
 		return m_angularVelocity;
 	}
-	
+
 	/**
 	 * Get the definition containing the body properties.
 	 * @asonly
@@ -436,12 +446,12 @@ class B2Body
 		{
 			return;
 		}
-		
+
 		if (isAwake() == false)
 		{
 			setAwake(true);
 		}
-		
+
 		//m_force += force;
 		m_force.x += force.x;
 		m_force.y += force.y;
@@ -460,7 +470,7 @@ class B2Body
 		{
 			return;
 		}
-		
+
 		if (isAwake() == false)
 		{
 			setAwake(true);
@@ -480,7 +490,7 @@ class B2Body
 		{
 			return;
 		}
-		
+
 		if (isAwake() == false)
 		{
 			setAwake(true);
@@ -491,7 +501,7 @@ class B2Body
 		//m_angularVelocity += m_invI * b2Cross(point - m_sweep.c, impulse);
 		m_angularVelocity += m_invI * ((point.x - m_sweep.c.x) * impulse.y - (point.y - m_sweep.c.y) * impulse.x);
 	}
-	
+
 	/**
 	 * Splits a body into two, preserving dynamic properties
 	 * @param	callback Called once per fixture, return true to move this fixture to the new body
@@ -506,7 +516,7 @@ class B2Body
 		var center:B2Vec2 = getWorldCenter();
 		var body1:B2Body = this;
 		var body2:B2Body = m_world.createBody(getDefinition());
-		
+
 		var prev:B2Fixture = null;
 		var f:B2Fixture = body1.m_fixtureList;
 		while (f != null)
@@ -522,44 +532,44 @@ class B2Body
 					body1.m_fixtureList = next;
 				}
 				body1.m_fixtureCount--;
-				
+
 				// Add fixture
 				f.m_next = body2.m_fixtureList;
 				body2.m_fixtureList = f;
 				body2.m_fixtureCount++;
-				
+
 				f.m_body = body2;
-				
+
 				f = next;
 			}else {
 				prev = f;
 				f = f.m_next;
 			}
 		}
-		
+
 		body1.resetMassData();
 		body2.resetMassData();
-		
+
 		// Compute consistent velocites for new bodies based on cached velocity
 		var center1:B2Vec2 = body1.getWorldCenter();
 		var center2:B2Vec2 = body2.getWorldCenter();
-		
-		var velocity1:B2Vec2 = B2Math.addVV(linearVelocity, 
+
+		var velocity1:B2Vec2 = B2Math.addVV(linearVelocity,
 			B2Math.crossFV(angularVelocity,
 				B2Math.subtractVV(center1, center)));
-				
-		var velocity2:B2Vec2 = B2Math.addVV(linearVelocity, 
+
+		var velocity2:B2Vec2 = B2Math.addVV(linearVelocity,
 			B2Math.crossFV(angularVelocity,
 				B2Math.subtractVV(center2, center)));
-				
+
 		body1.setLinearVelocity(velocity1);
 		body2.setLinearVelocity(velocity2);
 		body1.setAngularVelocity(angularVelocity);
 		body2.setAngularVelocity(angularVelocity);
-		
+
 		body1.synchronizeFixtures();
 		body2.synchronizeFixtures();
-		
+
 		return body2;
 	}
 
@@ -572,46 +582,46 @@ class B2Body
 	{
 		var f:B2Fixture;
 		f = other.m_fixtureList;
-		
+
 		// Recalculate velocities
 		var body1:B2Body = this;
 		var body2:B2Body = other;
-		
+
 		while (f != null)
 		{
 			var next:B2Fixture = f.m_next;
-			
+
 			// Remove fixture
 			other.m_fixtureCount--;
-			
+
 			// Add fixture
 			f.m_next = m_fixtureList;
 			m_fixtureList = f;
 			m_fixtureCount++;
-			
+
 			f.m_body = body2;
-			
+
 			f = next;
 		}
 		body1.m_fixtureCount = 0;
-		
+
 		// Compute consistent velocites for new bodies based on cached velocity
 		var center1:B2Vec2 = body1.getWorldCenter();
 		var center2:B2Vec2 = body2.getWorldCenter();
-		
+
 		var velocity1:B2Vec2 = body1.getLinearVelocity().copy();
 		var velocity2:B2Vec2 = body2.getLinearVelocity().copy();
-		
+
 		var angular1:Float = body1.getAngularVelocity();
 		var angular:Float = body2.getAngularVelocity();
-		
+
 		// TODO
-		
+
 		body1.resetMassData();
-		
+
 		synchronizeFixtures();
 	}
-	
+
 	/**
 	* Get the total mass of the body.
 	* @return the mass, usually in kilograms (kg).
@@ -627,8 +637,8 @@ class B2Body
 	public function getInertia() : Float{
 		return m_I;
 	}
-	
-	/** 
+
+	/**
 	 * Get the mass data of the body. The rotational inertial is relative to the center of mass.
 	 */
 	public function getMassData(data:B2MassData):Void
@@ -637,7 +647,7 @@ class B2Body
 		data.I = m_I;
 		data.center.setV(m_sweep.localCenter);
 	}
-	
+
 	/**
 	 * Set the mass properties to override the mass properties of the fixtures
 	 * Note that this changes the center of mass position.
@@ -653,45 +663,45 @@ class B2Body
 		{
 			return;
 		}
-		
+
 		if (m_type != DYNAMIC_BODY)
 		{
 			return;
 		}
-		
+
 		m_invMass = 0.0;
 		m_I = 0.0;
 		m_invI = 0.0;
-		
+
 		m_mass = massData.mass;
-		
+
 		// Compute the center of mass.
 		if (m_mass <= 0.0)
 		{
 			m_mass = 1.0;
 		}
 		m_invMass = 1.0 / m_mass;
-		
+
 		if (massData.I > 0.0 && (m_flags & e_fixedRotationFlag) == 0)
 		{
 			// Center the inertia about the center of mass
 			m_I = massData.I - m_mass * (massData.center.x * massData.center.x + massData.center.y * massData.center.y);
 			m_invI = 1.0 / m_I;
 		}
-		
+
 		// Move center of mass
 		var oldCenter:B2Vec2 = m_sweep.c.copy();
 		m_sweep.localCenter.setV(massData.center);
 		m_sweep.c0.setV(B2Math.mulX(m_xf, m_sweep.localCenter));
 		m_sweep.c.setV(m_sweep.c0);
-		
+
 		// Update center of mass velocity
 		//m_linearVelocity += b2Cross(m_angularVelocity, m_sweep.c - oldCenter);
 		m_linearVelocity.x += m_angularVelocity * -(m_sweep.c.y - oldCenter.y);
 		m_linearVelocity.y += m_angularVelocity * (m_sweep.c.x - oldCenter.x);
-		
+
 	}
-	
+
 	/**
 	 * This resets the mass properties to the sum of the mass properties of the fixtures.
 	 * This normally does not need to be called unless you called SetMassData to override
@@ -705,19 +715,19 @@ class B2Body
 		m_I = 0.0;
 		m_invI = 0.0;
 		m_sweep.localCenter.setZero();
-		
+
 		// Static and kinematic bodies have zero mass.
 		if (m_type == STATIC_BODY || m_type == KINEMATIC_BODY)
 		{
 			return;
 		}
 		//b2Assert(m_type == b2_dynamicBody);
-		
+
 		// Accumulate mass over all fixtures.
 		var center:B2Vec2 = B2Vec2.make(0, 0);
-		
+
 		var f:B2Fixture = m_fixtureList;
-		
+
 		while (f != null)
 		{
 			if (f.m_density == 0.0)
@@ -725,16 +735,16 @@ class B2Body
 				f = f.m_next;
 				continue;
 			}
-			
+
 			var massData:B2MassData = f.getMassData();
 			m_mass += massData.mass;
 			center.x += massData.center.x * massData.mass;
 			center.y += massData.center.y * massData.mass;
 			m_I += massData.I;
-			
+
 			f = f.m_next;
 		}
-		
+
 		// Compute the center of mass.
 		if (m_mass > 0.0)
 		{
@@ -748,7 +758,7 @@ class B2Body
 			m_mass = 1.0;
 			m_invMass = 1.0;
 		}
-		
+
 		if (m_I > 0.0 && (m_flags & e_fixedRotationFlag) == 0)
 		{
 			// Center the inertia about the center of mass
@@ -760,20 +770,20 @@ class B2Body
 			m_I = 0.0;
 			m_invI = 0.0;
 		}
-		
+
 		// Move center of mass
 		var oldCenter:B2Vec2 = m_sweep.c.copy();
 		m_sweep.localCenter.setV(center);
 		m_sweep.c0.setV(B2Math.mulX(m_xf, m_sweep.localCenter));
 		m_sweep.c.setV(m_sweep.c0);
-		
+
 		// Update center of mass velocity
 		//m_linearVelocity += b2Cross(m_angularVelocity, m_sweep.c - oldCenter);
 		m_linearVelocity.x += m_angularVelocity * -(m_sweep.c.y - oldCenter.y);
 		m_linearVelocity.y += m_angularVelocity * (m_sweep.c.x - oldCenter.x);
-		
+
 	}
-	  
+
 	/**
 	 * Get the world coordinates of a point given the local coordinates.
 	 * @param localPoint a point on the body measured relative the the body's origin.
@@ -782,7 +792,7 @@ class B2Body
 	public function getWorldPoint(localPoint:B2Vec2) : B2Vec2{
 		//return b2Math.b2MulX(m_xf, localPoint);
 		var A:B2Mat22 = m_xf.R;
-		var u:B2Vec2 = new B2Vec2(A.col1.x * localPoint.x + A.col2.x * localPoint.y, 
+		var u:B2Vec2 = new B2Vec2(A.col1.x * localPoint.x + A.col2.x * localPoint.y,
 								  A.col1.y * localPoint.x + A.col2.y * localPoint.y);
 		u.x += m_xf.position.x;
 		u.y += m_xf.position.y;
@@ -815,7 +825,7 @@ class B2Body
 	public function getLocalVector(worldVector:B2Vec2) : B2Vec2{
 		return B2Math.mulTMV(m_xf.R, worldVector);
 	}
-	
+
 	/**
 	* Get the world linear velocity of a world point attached to this body.
 	* @param a point in world coordinates.
@@ -824,10 +834,10 @@ class B2Body
 	public function getLinearVelocityFromWorldPoint(worldPoint:B2Vec2) : B2Vec2
 	{
 		//return          m_linearVelocity   + b2Cross(m_angularVelocity,   worldPoint   - m_sweep.c);
-		return new B2Vec2(m_linearVelocity.x -         m_angularVelocity * (worldPoint.y - m_sweep.c.y), 
+		return new B2Vec2(m_linearVelocity.x -         m_angularVelocity * (worldPoint.y - m_sweep.c.y),
 		                  m_linearVelocity.y +         m_angularVelocity * (worldPoint.x - m_sweep.c.x));
 	}
-	
+
 	/**
 	* Get the world velocity of a local point.
 	* @param a point in local coordinates.
@@ -837,14 +847,14 @@ class B2Body
 	{
 		//return GetLinearVelocityFromWorldPoint(GetWorldPoint(localPoint));
 		var A:B2Mat22 = m_xf.R;
-		var worldPoint:B2Vec2 = new B2Vec2(A.col1.x * localPoint.x + A.col2.x * localPoint.y, 
+		var worldPoint:B2Vec2 = new B2Vec2(A.col1.x * localPoint.x + A.col2.x * localPoint.y,
 		                                   A.col1.y * localPoint.x + A.col2.y * localPoint.y);
 		worldPoint.x += m_xf.position.x;
 		worldPoint.y += m_xf.position.y;
-		return new B2Vec2(m_linearVelocity.x -         m_angularVelocity * (worldPoint.y - m_sweep.c.y), 
+		return new B2Vec2(m_linearVelocity.x -         m_angularVelocity * (worldPoint.y - m_sweep.c.y),
 		                  m_linearVelocity.y +         m_angularVelocity * (worldPoint.x - m_sweep.c.x));
 	}
-	
+
 	/**
 	* Get the linear damping of the body.
 	*/
@@ -852,7 +862,7 @@ class B2Body
 	{
 		return m_linearDamping;
 	}
-	
+
 	/**
 	* Set the linear damping of the body.
 	*/
@@ -860,7 +870,7 @@ class B2Body
 	{
 		m_linearDamping = linearDamping;
 	}
-	
+
 	/**
 	* Get the angular damping of the body
 	*/
@@ -868,7 +878,7 @@ class B2Body
 	{
 		return m_angularDamping;
 	}
-	
+
 	/**
 	* Set the angular damping of the body.
 	*/
@@ -876,46 +886,46 @@ class B2Body
 	{
 		m_angularDamping = angularDamping;
 	}
-	
+
 	/**
 	 * Set the type of this body. This may alter the mass and velocity
 	 * @param	type - enum stored as a static member of b2Body
-	 */ 
+	 */
 	public function setType( type:B2BodyType ):Void
 	{
 		if ( m_type == type )
 		{
 			return;
 		}
-		
+
 		m_type = type;
-		
+
 		resetMassData();
-		
+
 		if ( m_type == STATIC_BODY )
 		{
 			m_linearVelocity.setZero();
 			m_angularVelocity = 0.0;
 		}
-		
+
 		setAwake(true);
-		
+
 		m_force.setZero();
 		m_torque = 0.0;
-		
+
 		// Since the body type changed, we need to flag contacts for filtering.
 		var ce:B2ContactEdge = m_contactList;
 		while (ce != null)
 		{
 			ce.contact.flagForFiltering();
 			ce = ce.next;
-		} 
+		}
 	}
-	
+
 	/**
 	 * Get the type of this body.
 	 * @return type enum as a uint
-	 */ 
+	 */
 	public function getType():B2BodyType
 	{
 		return m_type;
@@ -941,7 +951,7 @@ class B2Body
 	public function isBullet() : Bool{
 		return (m_flags & e_bulletFlag) == e_bulletFlag;
 	}
-	
+
 	/**
 	 * Is this body allowed to sleep
 	 * @param	flag
@@ -957,7 +967,7 @@ class B2Body
 			setAwake(true);
 		}
 	}
-	
+
 	/**
 	 * Set the sleep state of the body. A sleeping body has vety low CPU cost.
 	 * @param	flag - set to true to put body to sleep, false to wake it
@@ -978,7 +988,7 @@ class B2Body
 			m_torque = 0.0;
 		}
 	}
-	
+
 	/**
 	 * Get the sleeping state of this body.
 	 * @return true if body is sleeping
@@ -986,7 +996,7 @@ class B2Body
 	public function isAwake():Bool {
 		return (m_flags & e_awakeFlag) == e_awakeFlag;
 	}
-	
+
 	/**
 	 * Set this body to have fixed rotation. This causes the mass to be reset.
 	 * @param	fixed - true means no rotation
@@ -1001,10 +1011,10 @@ class B2Body
 		{
 			m_flags &= ~e_fixedRotationFlag;
 		}
-		
+
 		resetMassData();
 	}
-	
+
 	/**
 	* Does this body have fixed rotation?
 	* @return true means fixed rotation
@@ -1013,7 +1023,7 @@ class B2Body
 	{
 		return (m_flags & e_fixedRotationFlag)==e_fixedRotationFlag;
 	}
-	
+
 	/** Set the active state of the body. An inactive body is not
 	* simulated and cannot be collided with or woken up.
 	* If you pass a flag of true, all fixtures will be added to the
@@ -1033,7 +1043,7 @@ class B2Body
 		{
 			return;
 		}
-		
+
 		var broadPhase:IBroadPhase;
 		var f:B2Fixture;
 		if (flag)
@@ -1074,15 +1084,15 @@ class B2Body
 			m_contactList = null;
 		}
 	}
-	
+
 	/**
 	 * Get the active state of the body.
 	 * @return true if active.
-	 */ 
+	 */
 	public function isActive():Bool{
 		return (m_flags & e_activeFlag) == e_activeFlag;
 	}
-	
+
 	/**
 	* Is this body allowed to sleep?
 	*/
@@ -1104,14 +1114,14 @@ class B2Body
 	public function getJointList() : B2JointEdge{
 		return m_jointList;
 	}
-	
+
 	/**
 	 * Get the list of all controllers attached to this body.
 	 */
 	public function getControllerList() : B2ControllerEdge {
 		return m_controllerList;
 	}
-	
+
 	/**
 	 * Get a list of all contacts attached to this body.
 	 */
@@ -1151,20 +1161,20 @@ class B2Body
 
 	//--------------- Internals Below -------------------
 
-	
+
 	// Constructor
 	/**
 	 * @private
 	 */
 	public function new (bd:B2BodyDef, world:B2World) {
-		
+
 		m_xf = new B2Transform();
 		m_sweep = new B2Sweep();
 		m_linearVelocity = new B2Vec2();
 		m_force = new B2Vec2();
-		
+
 		//b2Settings.b2Assert(world.IsLocked() == false);
-		
+
 		//b2Settings.b2Assert(bd.position.IsValid());
  		//b2Settings.b2Assert(bd.linearVelocity.IsValid());
  		//b2Settings.b2Assert(b2Math.b2IsValid(bd.angle));
@@ -1172,9 +1182,9 @@ class B2Body
  		//b2Settings.b2Assert(b2Math.b2IsValid(bd.inertiaScale) && bd.inertiaScale >= 0.0);
  		//b2Settings.b2Assert(b2Math.b2IsValid(bd.angularDamping) && bd.angularDamping >= 0.0);
  		//b2Settings.b2Assert(b2Math.b2IsValid(bd.linearDamping) && bd.linearDamping >= 0.0);
-		
+
 		m_flags = 0;
-		
+
 		if (bd.bullet )
 		{
 			m_flags |= e_bulletFlag;
@@ -1195,16 +1205,16 @@ class B2Body
 		{
 			m_flags |= e_activeFlag;
 		}
-		
+
 		m_world = world;
-		
+
 		m_xf.position.setV(bd.position);
 		m_xf.R.set(bd.angle);
-		
+
 		m_sweep.localCenter.setZero();
 		m_sweep.t0 = 1.0;
 		m_sweep.a0 = m_sweep.a = bd.angle;
-		
+
 		//m_sweep.c0 = m_sweep.c = b2Mul(m_xf, m_sweep.localCenter);
 		//b2MulMV(m_xf.R, m_sweep.localCenter);
 		var tMat:B2Mat22 = m_xf.R;
@@ -1218,27 +1228,27 @@ class B2Body
 		m_sweep.c.y += m_xf.position.y;
 		//m_sweep.c0 = m_sweep.c
 		m_sweep.c0.setV(m_sweep.c);
-		
+
 		m_jointList = null;
 		m_controllerList = null;
 		m_contactList = null;
 		m_controllerCount = 0;
 		m_prev = null;
 		m_next = null;
-		
+
 		m_linearVelocity.setV(bd.linearVelocity);
 		m_angularVelocity = bd.angularVelocity;
-		
+
 		m_linearDamping = bd.linearDamping;
 		m_angularDamping = bd.angularDamping;
-		
+
 		m_force.set(0.0, 0.0);
 		m_torque = 0.0;
-		
+
 		m_sleepTime = 0.0;
-		
+
 		m_type = bd.type;
-		
+
 		if (m_type == DYNAMIC_BODY)
 		{
 			m_mass = 1.0;
@@ -1249,18 +1259,18 @@ class B2Body
 			m_mass = 0.0;
 			m_invMass = 0.0;
 		}
-		
+
 		m_I = 0.0;
 		m_invI = 0.0;
-		
+
 		m_inertiaScale = bd.inertiaScale;
-		
+
 		m_userData = bd.userData;
-		
+
 		m_fixtureList = null;
 		m_fixtureCount = 0;
 	}
-	
+
 	// Destructor
 	//~b2Body();
 
@@ -1268,7 +1278,7 @@ class B2Body
 	static private var s_xf1:B2Transform = new B2Transform();
 	//
 	public function synchronizeFixtures() : Void{
-		
+
 		var xf1:B2Transform = s_xf1;
 		xf1.R.set(m_sweep.a0);
 		//xf1.position = m_sweep.c0 - b2Mul(xf1.R, m_sweep.localCenter);
@@ -1276,7 +1286,7 @@ class B2Body
 		var tVec:B2Vec2 = m_sweep.localCenter;
 		xf1.position.x = m_sweep.c0.x - (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y);
 		xf1.position.y = m_sweep.c0.y - (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y);
-		
+
 		var f:B2Fixture;
 		var broadPhase:IBroadPhase = m_world.m_contactManager.m_broadPhase;
 		f = m_fixtureList;
@@ -1315,7 +1325,7 @@ class B2Body
 			}
 			jn = jn.next;
 		}
-		
+
 		return true;
 	}
 
@@ -1329,7 +1339,7 @@ class B2Body
 
 	public var m_flags:Int;
 	public var m_type:B2BodyType;
-	
+
 	public var m_islandIndex:Int;
 
 	public var m_xf:B2Transform;		// the body origin transform
@@ -1348,7 +1358,7 @@ class B2Body
 
 	public var m_fixtureList:B2Fixture;
 	public var m_fixtureCount:Int;
-	
+
 	public var m_controllerList:B2ControllerEdge;
 	public var m_controllerCount:Int;
 
@@ -1359,7 +1369,7 @@ class B2Body
 	public var m_invMass:Float;
 	public var m_I:Float;
 	public var m_invI:Float;
-	
+
 	public var m_inertiaScale:Float;
 
 	public var m_linearDamping:Float;
@@ -1368,8 +1378,8 @@ class B2Body
 	public var m_sleepTime:Float;
 
 	private var m_userData:Dynamic;
-	
-	
+
+
 	// m_flags
 	//enum
 	//{
@@ -1392,5 +1402,5 @@ class B2Body
 		static public var b2_kinematicBody:Int = 1;
 		static public var b2_dynamicBody:Int = 2;
 	//};
-	
+
 }

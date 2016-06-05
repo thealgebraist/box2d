@@ -47,49 +47,59 @@ import box2D.dynamics.joints.B2PulleyJoint;
 
 /**
 * The world class manages all physics entities, dynamic simulation,
-* and asynchronous queries. 
+* and asynchronous queries.
 */
 class B2World
 {
-	
+
 	// Construct a world object.
 	/**
 	* @param gravity the world gravity vector.
 	* @param doSleep improve performance by not simulating inactive bodies.
 	*/
 	public function new (gravity:B2Vec2, doSleep:Bool){
-		
+
 		s_stack = new Array <B2Body>();
 		m_contactManager = new B2ContactManager();
 		m_contactSolver = new B2ContactSolver();
 		m_island = new B2Island();
-		
+
 		m_destructionListener = null;
-		
+
 		m_bodyList = null;
 		m_contactList = null;
 		m_jointList = null;
 		m_controllerList = null;
-		
+
 		m_bodyCount = 0;
 		m_contactCount = 0;
 		m_jointCount = 0;
 		m_controllerCount = 0;
-		
+
 		m_warmStarting = true;
 		m_continuousPhysics = true;
-		
+
 		m_allowSleep = doSleep;
 		m_gravity = gravity;
-		
+
 		m_inv_dt0 = 0.0;
-		
+
 		m_flags = 0;
-		
+
 		m_contactManager.m_world = this;
-		
+
 		var bd:B2BodyDef = new B2BodyDef();
 		m_groundBody = createBody(bd);
+	}
+
+	public function forAllBodies(f)
+	{
+		var body = m_bodyList;
+		while (body!=null)
+		{
+			f(body);
+			body = body.getNext();
+		}
 	}
 
 	/**
@@ -119,7 +129,7 @@ class B2World
 		m_contactManager.m_contactListener = listener;
 	}
 
-	
+
 	/**
 	 * Use the given object as a broadphase.
 	 * The old broadphase will not be cleanly emptied.
@@ -141,7 +151,7 @@ class B2World
 			b = b.m_next;
 		}
 	}
-	
+
 	/**
 	* Perform validation of internal data structures.
 	*/
@@ -149,7 +159,7 @@ class B2World
 	{
 		m_contactManager.m_broadPhase.validate();
 	}
-	
+
 	/**
 	* Get the number of broad-phase proxies.
 	*/
@@ -157,23 +167,23 @@ class B2World
 	{
 		return m_contactManager.m_broadPhase.getProxyCount();
 	}
-	
+
 	/**
 	* Create a rigid body given a definition. No reference to the definition
 	* is retained.
 	* @warning This function is locked during callbacks.
 	*/
 	public function createBody(def:B2BodyDef) : B2Body{
-		
+
 		//b2Settings.b2Assert(m_lock == false);
 		if (isLocked() == true)
 		{
 			return null;
 		}
-		
+
 		//void* mem = m_blockAllocator.Allocate(sizeof(b2Body));
 		var b:B2Body = new B2Body(def, this);
-		
+
 		// Add to world doubly linked list.
 		b.m_prev = null;
 		b.m_next = m_bodyList;
@@ -183,9 +193,9 @@ class B2World
 		}
 		m_bodyList = b;
 		++m_bodyCount;
-		
+
 		return b;
-		
+
 	}
 
 	/**
@@ -195,29 +205,29 @@ class B2World
 	* @warning This function is locked during callbacks.
 	*/
 	public function destroyBody(b:B2Body) : Void{
-		
+
 		//b2Settings.b2Assert(m_bodyCount > 0);
 		//b2Settings.b2Assert(m_lock == false);
 		if (isLocked() == true)
 		{
 			return;
 		}
-		
+
 		// Delete the attached joints.
 		var jn:B2JointEdge = b.m_jointList;
 		while (jn != null)
 		{
 			var jn0:B2JointEdge = jn;
 			jn = jn.next;
-			
+
 			if (m_destructionListener != null)
 			{
 				m_destructionListener.sayGoodbyeJoint(jn0.joint);
 			}
-			
+
 			destroyJoint(jn0.joint);
 		}
-		
+
 		// Detach controllers attached to this body
 		var coe:B2ControllerEdge = b.m_controllerList;
 		while (coe != null)
@@ -226,7 +236,7 @@ class B2World
 			coe = coe.nextController;
 			coe0.controller.removeBody(b);
 		}
-		
+
 		// Delete the attached contacts.
 		var ce:B2ContactEdge = b.m_contactList;
 		while (ce != null)
@@ -236,7 +246,7 @@ class B2World
 			m_contactManager.destroy(ce0.contact);
 		}
 		b.m_contactList = null;
-		
+
 		// Delete the attached fixtures. This destroys broad-phase
 		// proxies.
 		var f:B2Fixture = b.m_fixtureList;
@@ -244,41 +254,41 @@ class B2World
 		{
 			var f0:B2Fixture = f;
 			f = f.m_next;
-			
+
 			if (m_destructionListener != null)
 			{
 				m_destructionListener.sayGoodbyeFixture(f0);
 			}
-			
+
 			f0.destroyProxy(m_contactManager.m_broadPhase);
 			f0.destroy();
 			//f0->~b2Fixture();
 			//m_blockAllocator.Free(f0, sizeof(b2Fixture));
-			
+
 		}
 		b.m_fixtureList = null;
 		b.m_fixtureCount = 0;
-		
+
 		// Remove world body list.
 		if (b.m_prev != null)
 		{
 			b.m_prev.m_next = b.m_next;
 		}
-		
+
 		if (b.m_next != null)
 		{
 			b.m_next.m_prev = b.m_prev;
 		}
-		
+
 		if (b == m_bodyList)
 		{
 			m_bodyList = b.m_next;
 		}
-		
+
 		--m_bodyCount;
 		//b->~b2Body();
 		//m_blockAllocator.Free(b, sizeof(b2Body));
-		
+
 	}
 
 	/**
@@ -287,11 +297,11 @@ class B2World
 	* @warning This function is locked during callbacks.
 	*/
 	public function createJoint(def:B2JointDef) : B2Joint{
-		
+
 		//b2Settings.b2Assert(m_lock == false);
-		
+
 		var j:B2Joint = B2Joint.create(def, null);
-		
+
 		// Connect to the world list.
 		j.m_prev = null;
 		j.m_next = m_jointList;
@@ -301,7 +311,7 @@ class B2World
 		}
 		m_jointList = j;
 		++m_jointCount;
-		
+
 		// Connect to the bodies' doubly linked lists.
 		j.m_edgeA.joint = j;
 		j.m_edgeA.other = j.m_bodyB;
@@ -309,17 +319,17 @@ class B2World
 		j.m_edgeA.next = j.m_bodyA.m_jointList;
 		if (j.m_bodyA.m_jointList != null) j.m_bodyA.m_jointList.prev = j.m_edgeA;
 		j.m_bodyA.m_jointList = j.m_edgeA;
-		
+
 		j.m_edgeB.joint = j;
 		j.m_edgeB.other = j.m_bodyA;
 		j.m_edgeB.prev = null;
 		j.m_edgeB.next = j.m_bodyB.m_jointList;
 		if (j.m_bodyB.m_jointList != null) j.m_bodyB.m_jointList.prev = j.m_edgeB;
 		j.m_bodyB.m_jointList = j.m_edgeB;
-		
+
 		var bodyA:B2Body = def.bodyA;
 		var bodyB:B2Body = def.bodyB;
-		
+
 		// If the joint prevents collisions, then flag any contacts for filtering.
 		if (def.collideConnected == false )
 		{
@@ -336,11 +346,11 @@ class B2World
 				edge = edge.next;
 			}
 		}
-		
+
 		// Note: creating a joint doesn't wake the bodies.
-		
+
 		return j;
-		
+
 	}
 
 	/**
@@ -348,78 +358,78 @@ class B2World
 	* @warning This function is locked during callbacks.
 	*/
 	public function destroyJoint(j:B2Joint) : Void{
-		
+
 		//b2Settings.b2Assert(m_lock == false);
-		
+
 		var collideConnected:Bool = j.m_collideConnected;
-		
+
 		// Remove from the doubly linked list.
 		if (j.m_prev != null)
 		{
 			j.m_prev.m_next = j.m_next;
 		}
-		
+
 		if (j.m_next != null)
 		{
 			j.m_next.m_prev = j.m_prev;
 		}
-		
+
 		if (j == m_jointList)
 		{
 			m_jointList = j.m_next;
 		}
-		
+
 		// Disconnect from island graph.
 		var bodyA:B2Body = j.m_bodyA;
 		var bodyB:B2Body = j.m_bodyB;
-		
+
 		// Wake up connected bodies.
 		bodyA.setAwake(true);
 		bodyB.setAwake(true);
-		
+
 		// Remove from body 1.
 		if (j.m_edgeA.prev != null)
 		{
 			j.m_edgeA.prev.next = j.m_edgeA.next;
 		}
-		
+
 		if (j.m_edgeA.next != null)
 		{
 			j.m_edgeA.next.prev = j.m_edgeA.prev;
 		}
-		
+
 		if (j.m_edgeA == bodyA.m_jointList)
 		{
 			bodyA.m_jointList = j.m_edgeA.next;
 		}
-		
+
 		j.m_edgeA.prev = null;
 		j.m_edgeA.next = null;
-		
+
 		// Remove from body 2
 		if (j.m_edgeB.prev != null)
 		{
 			j.m_edgeB.prev.next = j.m_edgeB.next;
 		}
-		
+
 		if (j.m_edgeB.next != null)
 		{
 			j.m_edgeB.next.prev = j.m_edgeB.prev;
 		}
-		
+
 		if (j.m_edgeB == bodyB.m_jointList)
 		{
 			bodyB.m_jointList = j.m_edgeB.next;
 		}
-		
+
 		j.m_edgeB.prev = null;
 		j.m_edgeB.next = null;
-		
+
 		B2Joint.destroy(j, null);
-		
+
 		//b2Settings.b2Assert(m_jointCount > 0);
 		--m_jointCount;
-		
+
 		// If the joint prevents collisions, then flag any contacts for filtering.
 		if (collideConnected == false)
 		{
@@ -436,9 +446,9 @@ class B2World
 				edge = edge.next;
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Add a controller to the world list
 	 */
@@ -447,14 +457,14 @@ class B2World
 		c.m_next = m_controllerList;
 		c.m_prev = null;
 		m_controllerList = c;
-		
+
 		c.m_world = this;
-		
+
 		m_controllerCount++;
-		
+
 		return c;
 	}
-	
+
 	public function removeController(c:B2Controller) : Void
 	{
 		//TODO: Remove bodies from controller
@@ -464,7 +474,7 @@ class B2World
 			c.m_next.m_prev = c.m_prev;
 		if (m_controllerList == c)
 			m_controllerList = c.m_next;
-			
+
 		m_controllerCount--;
 	}
 
@@ -473,19 +483,19 @@ class B2World
 		if (controller.m_world != this)
 			throw "Controller can only be a member of one world";
 			//throw new Error("Controller can only be a member of one world");
-		
+
 		controller.m_next = m_controllerList;
 		controller.m_prev = null;
 		if (m_controllerList != null)
 			m_controllerList.m_prev = controller;
 		m_controllerList = controller;
 		++m_controllerCount;
-		
+
 		controller.m_world = this;
-		
+
 		return controller;
 	}
-	
+
 	public function destroyController(controller:B2Controller):Void
 	{
 		//b2Settings.b2Assert(m_controllerCount > 0);
@@ -498,7 +508,7 @@ class B2World
 			m_controllerList = controller.m_next;
 		--m_controllerCount;
 	}
-	
+
 	/**
 	* Enable/disable warm starting. For testing.
 	*/
@@ -508,7 +518,7 @@ class B2World
 	* Enable/disable continuous physics. For testing.
 	*/
 	public function setContinuousPhysics(flag: Bool) : Void { m_continuousPhysics = flag; }
-	
+
 	/**
 	* Get the number of bodies.
 	*/
@@ -516,7 +526,7 @@ class B2World
 	{
 		return m_bodyCount;
 	}
-	
+
 	/**
 	* Get the number of joints.
 	*/
@@ -524,7 +534,7 @@ class B2World
 	{
 		return m_jointCount;
 	}
-	
+
 	/**
 	* Get the number of contacts (each may have 0 or more contact points).
 	*/
@@ -532,7 +542,7 @@ class B2World
 	{
 		return m_contactCount;
 	}
-	
+
 	/**
 	* Change the global gravity vector.
 	*/
@@ -570,9 +580,9 @@ class B2World
 			m_contactManager.findNewContacts();
 			m_flags &= ~e_newFixture;
 		}
-		
+
 		m_flags |= e_locked;
-		
+
 		var step:B2TimeStep = s_timestep2;
 		step.dt = dt;
 		step.velocityIterations = velocityIterations;
@@ -585,33 +595,33 @@ class B2World
 		{
 			step.inv_dt = 0.0;
 		}
-		
+
 		step.dtRatio = m_inv_dt0 * dt;
-		
+
 		step.warmStarting = m_warmStarting;
-		
+
 		// Update contacts.
 		m_contactManager.collide();
-		
+
 		// Integrate velocities, solve velocity constraints, and integrate positions.
 		if (step.dt > 0.0)
 		{
 			solve(step);
 		}
-		
+
 		// Handle TOI events.
 		if (m_continuousPhysics && step.dt > 0.0)
 		{
 			solveTOI(step);
 		}
-		
+
 		if (step.dt > 0.0)
 		{
 			m_inv_dt0 = step.inv_dt;
 		}
 		m_flags &= ~e_locked;
 	}
-	
+
 	/**
 	 * Call this after you are done with time steps to clear the forces. You normally
 	 * call this after each call to Step, unless you are performing sub-steps.
@@ -626,7 +636,7 @@ class B2World
 			body = body.m_next;
 		}
 	}
-	
+
 	static private var s_xf:B2Transform = new B2Transform();
 
 	/**
@@ -673,7 +683,7 @@ class B2World
 		shape.computeAABB(aabb, transform);
 		broadPhase.query(worldQueryWrapper, aabb);
 	}
-	
+
 	/**
 	 * Query the world for all fixtures that contain a point.
 	 * @param callback a user implemented callback class. It should match signature
@@ -697,7 +707,7 @@ class B2World
 		aabb.upperBound.set(p.x + B2Settings.b2_linearSlop, p.y + B2Settings.b2_linearSlop);
 		broadPhase.query(worldQueryWrapper, aabb);
 	}
-	
+
 	/**
 	 * Ray-cast the world for all fixtures in the path of the ray. Your callback
 	 * Controls whether you get the closest point, any point, or n-points
@@ -738,7 +748,7 @@ class B2World
 		var input:B2RayCastInput = new B2RayCastInput(point1, point2);
 		broadPhase.rayCast(rayCastWrapper, input);
 	}
-	
+
 	public function rayCastOne(point1:B2Vec2, point2:B2Vec2):B2Fixture
 	{
 		var result:B2Fixture;
@@ -750,7 +760,7 @@ class B2World
 		rayCast(rayCastOneWrapper, point1, point2);
 		return result;
 	}
-	
+
 	public function rayCastAll(point1:B2Vec2, point2:B2Vec2):Array <B2Fixture>
 	{
 		var result:Array <B2Fixture> = new Array <B2Fixture>();
@@ -785,13 +795,13 @@ class B2World
 	 * Get the world contact list. With the returned contact, use b2Contact::GetNext to get
 	 * the next contact in the world list. A NULL contact indicates the end of the list.
 	 * @return the head of the world contact list.
-	 * @warning contacts are 
+	 * @warning contacts are
 	 */
 	public function getContactList():B2Contact
 	{
 		return m_contactList;
 	}
-	
+
 	/**
 	 * Is the world locked (in the middle of a time step).
 	 */
@@ -807,7 +817,7 @@ class B2World
 	private var s_stack:Array <B2Body>;
 	public function solve(step:B2TimeStep) : Void{
 		var b:B2Body;
-		
+
 		// Step all controllers
 		var controller:B2Controller= m_controllerList;
 		while (controller != null)
@@ -815,11 +825,11 @@ class B2World
 			controller.step(step);
 			controller = controller.m_next;
 		}
-		
+
 		// Size the island for the worst case.
 		var island:B2Island = m_island;
 		island.initialize(m_bodyCount, m_contactCount, m_jointCount, null, m_contactManager.m_contactListener, m_contactSolver);
-		
+
 		// Clear all the island flags.
 		b = m_bodyList;
 		while (b != null)
@@ -839,7 +849,7 @@ class B2World
 			j.m_islandFlag = false;
 			j = j.m_next;
 		}
-		
+
 		// Build and simulate all awake islands.
 		var stackSize:Int = m_bodyCount;
 		//b2Body** stack = (b2Body**)m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
@@ -852,26 +862,26 @@ class B2World
 				seed = seed.m_next;
 				continue;
 			}
-			
+
 			if (seed.isAwake() == false || seed.isActive() == false)
 			{
 				seed = seed.m_next;
 				continue;
 			}
-			
+
 			// The seed can be dynamic or kinematic.
 			if (seed.getType() == STATIC_BODY)
 			{
 				seed = seed.m_next;
 				continue;
 			}
-			
+
 			// Reset island and stack.
 			island.clear();
 			var stackCount:Int = 0;
 			stack[stackCount++] = seed;
 			seed.m_flags |= B2Body.e_islandFlag;
-			
+
 			// Perform a depth first search (DFS) on the constraint graph.
 			while (stackCount > 0)
 			{
@@ -879,20 +889,20 @@ class B2World
 				b = stack[--stackCount];
 				//b2Assert(b.IsActive() == true);
 				island.addBody(b);
-				
+
 				// Make sure the body is awake.
 				if (b.isAwake() == false)
 				{
 					b.setAwake(true);
 				}
-				
+
 				// To keep islands as small as possible, we don't
 				// propagate islands across static bodies.
 				if (b.getType() == STATIC_BODY)
 				{
 					continue;
 				}
-				
+
 				var other:B2Body;
 				// Search all contacts connected to this body.
 				var ce:B2ContactEdge = b.m_contactList;
@@ -904,7 +914,7 @@ class B2World
 						ce = ce.next;
 						continue;
 					}
-					
+
 					// Is this contact solid and touching?
 					if (ce.contact.isSensor() == true ||
 						ce.contact.isEnabled() == false ||
@@ -913,26 +923,26 @@ class B2World
 						ce = ce.next;
 						continue;
 					}
-					
+
 					island.addContact(ce.contact);
 					ce.contact.m_flags |= B2Contact.e_islandFlag;
-					
+
 					//var other:B2Body = ce.other;
 					other = ce.other;
-					
+
 					// Was the other body already added to this island?
 					if ((other.m_flags & B2Body.e_islandFlag) != 0)
 					{
 						ce = ce.next;
 						continue;
 					}
-					
+
 					//b2Settings.b2Assert(stackCount < stackSize);
 					stack[stackCount++] = other;
 					other.m_flags |= B2Body.e_islandFlag;
 					ce = ce.next;
 				}
-				
+
 				// Search all joints connect to this body.
 				var jn:B2JointEdge = b.m_jointList;
 				while (jn != null)
@@ -942,25 +952,25 @@ class B2World
 						jn = jn.next;
 						continue;
 					}
-					
+
 					other = jn.other;
-					
+
 					// Don't simulate joints connected to inactive bodies.
 					if (other.isActive() == false)
 					{
 						jn = jn.next;
 						continue;
 					}
-					
+
 					island.addJoint(jn.joint);
 					jn.joint.m_islandFlag = true;
-					
+
 					if ((other.m_flags & B2Body.e_islandFlag) != 0)
 					{
 						jn = jn.next;
 						continue;
 					}
-					
+
 					//b2Settings.b2Assert(stackCount < stackSize);
 					stack[stackCount++] = other;
 					other.m_flags |= B2Body.e_islandFlag;
@@ -968,7 +978,7 @@ class B2World
 				}
 			}
 			island.solve(step, m_gravity, m_allowSleep);
-			
+
 			// Post solve cleanup.
 			for (i in 0...island.m_bodyCount)
 			{
@@ -981,14 +991,14 @@ class B2World
 			}
 			seed = seed.m_next;
 		}
-		
+
 		//m_stackAllocator.Free(stack);
 		for (i in 0...stack.length)
 		{
 			if (stack[i] == null) break;
 			stack[i] = null;
 		}
-		
+
 		// Synchronize fixutres, check for out of range bodies.
 		b = m_bodyList;
 		while (b != null)
@@ -998,30 +1008,30 @@ class B2World
 				b = b.m_next;
 				continue;
 			}
-			
+
 			if (b.getType() == STATIC_BODY)
 			{
 				b = b.m_next;
 				continue;
 			}
-			
+
 			// Update fixtures (for broad-phase).
 			b.synchronizeFixtures();
 			b = b.m_next;
 		}
-		
+
 		// Look for new contacts.
 		m_contactManager.findNewContacts();
-		
+
 	}
-	
+
 	private static var s_backupA:B2Sweep = new B2Sweep();
 	private static var s_backupB:B2Sweep = new B2Sweep();
 	private static var s_timestep:B2TimeStep = new B2TimeStep();
 	private static var s_queue:Array <B2Body> = new Array <B2Body>();
 	// Find TOI contacts and solve them.
 	public function solveTOI(step:B2TimeStep) : Void{
-		
+
 		var b:B2Body;
 		var fA:B2Fixture;
 		var fB:B2Fixture;
@@ -1029,11 +1039,11 @@ class B2World
 		var bB:B2Body;
 		var cEdge:B2ContactEdge;
 		var j:B2Joint;
-		
+
 		// Reserve an island and a queue for TOI island solution.
 		var island:B2Island = m_island;
 		island.initialize(m_bodyCount, B2Settings.b2_maxTOIContactsPerIsland, B2Settings.b2_maxTOIJointsPerIsland, null, m_contactManager.m_contactListener, m_contactSolver);
-		
+
 		//Simple one pass queue
 		//Relies on the fact that we're only making one pass
 		//through and each body can only be pushed/popped one.
@@ -1042,9 +1052,9 @@ class B2World
 		//To pop:
 		//  poppedElement = queue[queueStart++];
 		//  --queueSize;
-		
+
 		var queue:Array <B2Body> = s_queue;
-		
+
 		b = m_bodyList;
 		while (b != null)
 		{
@@ -1052,7 +1062,7 @@ class B2World
 			b.m_sweep.t0 = 0.0;
 			b = b.m_next;
 		}
-		
+
 		var c:B2Contact = m_contactList;
 		while (c != null)
 		{
@@ -1060,23 +1070,23 @@ class B2World
 			c.m_flags &= ~(B2Contact.e_toiFlag | B2Contact.e_islandFlag);
 			c = c.m_next;
 		}
-		
+
 		j = m_jointList;
 		while (j != null)
 		{
 			j.m_islandFlag = false;
 			j = j.m_next;
 		}
-		
+
 		// Find TOI events and solve them.
-		
-		
+
+
 		while (true)
 		{
 			// Find the first TOI.
 			var minContact:B2Contact = null;
 			var minTOI:Float = 1.0;
-			
+
 			c = m_contactList;
 			while (c != null)
 			{
@@ -1088,9 +1098,9 @@ class B2World
 					c = c.m_next;
 					continue;
 				}
-				
+
 				// TODO_ERIN keep a counter on the contact, only respond to M TOIs per contact.
-				
+
 				var toi:Float = 1.0;
 				if ((c.m_flags & B2Contact.e_toiFlag) != 0)
 				{
@@ -1104,17 +1114,17 @@ class B2World
 					fB = c.m_fixtureB;
 					bA = fA.m_body;
 					bB = fB.m_body;
-					
+
 					if ((bA.getType() != DYNAMIC_BODY || bA.isAwake() == false) &&
 						(bB.getType() != DYNAMIC_BODY || bB.isAwake() == false))
 					{
 						c = c.m_next;
 						continue;
 					}
-					
+
 					// Put the sweeps onto the same time interval.
 					var t0:Float = bA.m_sweep.t0;
-					
+
 					if (bA.m_sweep.t0 < bB.m_sweep.t0)
 					{
 						t0 = bB.m_sweep.t0;
@@ -1125,13 +1135,13 @@ class B2World
 						t0 = bA.m_sweep.t0;
 						bB.m_sweep.advance(t0);
 					}
-					
+
 					//b2Settings.b2Assert(t0 < 1.0f);
-					
+
 					// Compute the time of impact.
 					toi = c.computeTOI(bA.m_sweep, bB.m_sweep);
 					B2Settings.b2Assert(0.0 <= toi && toi <= 1.0);
-					
+
 					// If the TOI is in range ...
 					if (toi > 0.0 && toi < 1.0)
 					{
@@ -1140,28 +1150,28 @@ class B2World
 						toi = (1.0 - toi) * t0 + toi;
 						if (toi > 1) toi = 1;
 					}
-					
-					
+
+
 					c.m_toi = toi;
 					c.m_flags |= B2Contact.e_toiFlag;
 				}
-				
+
 				if (B2Math.MIN_VALUE < toi && toi < minTOI)
 				{
 					// This is the minimum TOI found so far.
 					minContact = c;
 					minTOI = toi;
 				}
-				
+
 				c = c.m_next;
 			}
-			
+
 			if (minContact == null || 1.0 - 100.0 * B2Math.MIN_VALUE < minTOI)
 			{
 				// No more TOI events. Done!
 				break;
 			}
-			
+
 			// Advance the bodies to the TOI.
 			fA = minContact.m_fixtureA;
 			fB = minContact.m_fixtureB;
@@ -1171,11 +1181,11 @@ class B2World
 			s_backupB.set(bB.m_sweep);
 			bA.advance(minTOI);
 			bB.advance(minTOI);
-			
+
 			// The TOI contact likely has some new contact points.
 			minContact.update(m_contactManager.m_contactListener);
 			minContact.m_flags &= ~B2Contact.e_toiFlag;
-			
+
 			// Is the contact solid?
 			if (minContact.isSensor() == true ||
 				minContact.isEnabled() == false)
@@ -1187,50 +1197,50 @@ class B2World
 				bB.synchronizeTransform();
 				continue;
 			}
-			
+
 			// Did numerical issues prevent;,ontact pointjrom being generated
 			if (minContact.isTouching() == false)
 			{
 				// Give up on this TOI
 				continue;
 			}
-			
+
 			// Build the TOI island. We need a dynamic seed.
 			var seed:B2Body = bA;
 			if (seed.getType() != DYNAMIC_BODY)
 			{
 				seed = bB;
 			}
-			
+
 			// Reset island and queue.
 			island.clear();
 			var queueStart:Int = 0;	//start index for queue
 			var queueSize:Int = 0;	//elements in queue
 			queue[queueStart + queueSize++] = seed;
 			seed.m_flags |= B2Body.e_islandFlag;
-			
+
 			// Perform a breadth first search (BFS) on the contact graph.
 			while (queueSize > 0)
 			{
 				// Grab the next body off the stack and add it to the island.
 				b = queue[queueStart++];
 				--queueSize;
-				
+
 				island.addBody(b);
-				
+
 				// Make sure the body is awake.
 				if (b.isAwake() == false)
 				{
 					b.setAwake(true);
 				}
-				
+
 				// To keep islands as small as possible, we don't
 				// propagate islands across static or kinematic bodies.
 				if (b.getType() != DYNAMIC_BODY)
 				{
 					continue;
 				}
-				
+
 				// Search all contacts connected to this body.
 				cEdge = b.m_contactList;
 				var other:B2Body;
@@ -1242,14 +1252,14 @@ class B2World
 						cEdge = cEdge.next;
 						break;
 					}
-					
+
 					// Has this contact already been added to an island?
 					if ((cEdge.contact.m_flags & B2Contact.e_islandFlag) != 0)
 					{
 						cEdge = cEdge.next;
 						continue;
 					}
-					
+
 					// Skip sperate, sensor, or disabled contacts.
 					if (cEdge.contact.isSensor() == true ||
 						cEdge.contact.isEnabled() == false ||
@@ -1258,34 +1268,34 @@ class B2World
 						cEdge = cEdge.next;
 						continue;
 					}
-					
+
 					island.addContact(cEdge.contact);
 					cEdge.contact.m_flags |= B2Contact.e_islandFlag;
-					
+
 					// Update other body.
 					other = cEdge.other;
-					
+
 					// Was the other body already added to this island?
 					if ((other.m_flags & B2Body.e_islandFlag) != 0)
 					{
 						cEdge = cEdge.next;
 						continue;
 					}
-					
+
 					// Synchronize the connected body.
 					if (other.getType() != STATIC_BODY)
 					{
 						other.advance(minTOI);
 						other.setAwake(true);
 					}
-					
+
 					//b2Settings.b2Assert(queueStart + queueSize < queueCapacity);
 					queue[queueStart + queueSize] = other;
 					++queueSize;
 					other.m_flags |= B2Body.e_islandFlag;
 					cEdge = cEdge.next;
 				}
-				
+
 				var jEdge:B2JointEdge = b.m_jointList;
 				while (jEdge != null)
 				{
@@ -1293,34 +1303,34 @@ class B2World
 						jEdge = jEdge.next;
 						continue;
 					}
-					
+
 					if (jEdge.joint.m_islandFlag == true) {
 						jEdge = jEdge.next;
 						continue;
 					}
-					
+
 					other = jEdge.other;
 					if (other.isActive() == false)
 					{
 						jEdge = jEdge.next;
 						continue;
 					}
-					
+
 					island.addJoint(jEdge.joint);
 					jEdge.joint.m_islandFlag = true;
-					
+
 					if ((other.m_flags & B2Body.e_islandFlag) != 0) {
 						jEdge = jEdge.next;
 						continue;
 					}
-						
+
 					// Synchronize the connected body.
 					if (other.getType() != STATIC_BODY)
 					{
 						other.advance(minTOI);
 						other.setAwake(true);
 					}
-					
+
 					//b2Settings.b2Assert(queueStart + queueSize < queueCapacity);
 					queue[queueStart + queueSize] = other;
 					++queueSize;
@@ -1328,7 +1338,7 @@ class B2World
 					jEdge = jEdge.next;
 				}
 			}
-			
+
 			var subStep:B2TimeStep = s_timestep;
 			subStep.warmStarting = false;
 			subStep.dt = (1.0 - minTOI) * step.dt;
@@ -1336,9 +1346,9 @@ class B2World
 			subStep.dtRatio = 0.0;
 			subStep.velocityIterations = step.velocityIterations;
 			subStep.positionIterations = step.positionIterations;
-			
+
 			island.solveTOI(subStep);
-			
+
 			var i:Int;
 			// Post solve cleanup.
 			for (i in 0...island.m_bodyCount)
@@ -1346,20 +1356,20 @@ class B2World
 				// Allow bodies to participate in future TOI islands.
 				b = island.m_bodies[i];
 				b.m_flags &= ~B2Body.e_islandFlag;
-				
+
 				if (b.isAwake() == false)
 				{
 					continue;
 				}
-				
+
 				if (b.getType() != DYNAMIC_BODY)
 				{
 					continue;
 				}
-				
+
 				// Update fixtures (for broad-phase).
 				b.synchronizeFixtures();
-				
+
 				// Invalidate all contact TOIs associated with this body. Some of these
 				// may not be in the island because they were not touching.
 				cEdge = b.m_contactList;
@@ -1369,33 +1379,33 @@ class B2World
 					cEdge = cEdge.next;
 				}
 			}
-			
+
 			for (i in 0...island.m_contactCount)
 			{
 				// Allow contacts to participate in future TOI islands.
 				c = island.m_contacts[i];
 				c.m_flags &= ~(B2Contact.e_toiFlag | B2Contact.e_islandFlag);
 			}
-			
+
 			for (i in 0...island.m_jointCount)
 			{
 				// Allow joints to participate in future TOI islands
 				j = island.m_joints[i];
 				j.m_islandFlag = false;
 			}
-			
+
 			// Commit fixture proxy movements to the broad-phase so that new contacts are created.
 			// Also, some contacts can be destroyed.
 			m_contactManager.findNewContacts();
 		}
-		
+
 		//m_stackAllocator.Free(queue);
 	}
-	
+
 	static private var s_jointColor:B2Color = new B2Color(0.5, 0.8, 0.8);
 	//
 	public function drawJoint(joint:B2Joint) : Void{
-		
+
 		var b1:B2Body = joint.getBodyA();
 		var b2:B2Body = joint.getBodyB();
 		var xf1:B2Transform = b1.m_xf;
@@ -1404,71 +1414,71 @@ class B2World
 		var x2:B2Vec2 = xf2.position;
 		var p1:B2Vec2 = joint.getAnchorA();
 		var p2:B2Vec2 = joint.getAnchorB();
-		
+
 		//b2Color color(0.5f, 0.8f, 0.8f);
 		var color:B2Color = s_jointColor;
-		
+
 		switch (joint.m_type)
 		{
 		case DISTANCE_JOINT:
-		
+
 		case PULLEY_JOINT:
 			{
 				var pulley:B2PulleyJoint = cast (joint, B2PulleyJoint);
 				var s1:B2Vec2 = pulley.getGroundAnchorA();
 				var s2:B2Vec2 = pulley.getGroundAnchorB();
 			}
-		
+
 		case MOUSE_JOINT:
-		
+
 		default:
 		}
 	}
-	
+
 	public function drawShape(shape:B2Shape, xf:B2Transform, color:B2Color) : Void{
-		
+
 		switch (shape.m_type)
 		{
 		case B2ShapeType.CIRCLE_SHAPE:
 			{
 				var circle:B2CircleShape = cast (shape, B2CircleShape);
-				
+
 				var center:B2Vec2 = B2Math.mulX(xf, circle.m_p);
 				var radius:Float = circle.m_radius;
 				var axis:B2Vec2 = xf.R.col1;
-				
+
 			}
-		
+
 		case B2ShapeType.POLYGON_SHAPE:
 			{
 				var i:Int;
 				var poly:B2PolygonShape = cast (shape, B2PolygonShape);
 				var vertexCount:Int = poly.getVertexCount();
 				var localVertices:Array <B2Vec2> = poly.getVertices();
-				
+
 				var vertices:Array <B2Vec2> = new Array <B2Vec2> ();
-				
+
 				for (i in 0...vertexCount)
 				{
 					vertices[i] = B2Math.mulX(xf, localVertices[i]);
 				}
-				
+
 			}
-		
+
 		case B2ShapeType.EDGE_SHAPE:
 			{
 				var edge: B2EdgeShape = cast (shape, B2EdgeShape);
-				
-				
+
+
 			}
 		default:
 		}
 	}
-	
+
 	public var m_flags:Int;
 
 	public var m_contactManager:B2ContactManager;
-	
+
 	// These two are stored purely for efficiency purposes, they don't maintain
 	// any data outside of a call to Step
 	private var m_contactSolver:B2ContactSolver;
@@ -1499,9 +1509,9 @@ class B2World
 
 	// This is for debugging the solver.
 	static private var m_continuousPhysics:Bool;
-	
+
 	// m_flags
 	public static var e_newFixture:Int = 0x0001;
 	public static var e_locked:Int = 0x0002;
-	
+
 }
