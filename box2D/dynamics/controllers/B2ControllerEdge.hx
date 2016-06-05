@@ -2,7 +2,7 @@
 
 import box2D.dynamics.B2Body;
 
-class B2ControllerEdge 
+class B2ControllerEdge
 {
 	public function new () {}
 	/** provides quick access to other end of this edge */

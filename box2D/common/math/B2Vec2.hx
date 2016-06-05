@@ -33,21 +33,21 @@ class B2Vec2
 
 	public function getNegative():B2Vec2 { return new B2Vec2(-x, -y); }
 	public function negativeSelf():Void { x = -x; y = -y; }
-	
+
 	static public function make(x_:Float, y_:Float):B2Vec2
 	{
 		return new B2Vec2(x_, y_);
 	}
-	
+
 	public function copy():B2Vec2{
 		return new B2Vec2(x,y);
 	}
-	
+
 	public function add(v:B2Vec2) : Void
 	{
 		x += v.x; y += v.y;
 	}
-	
+
 	public function subtract(v:B2Vec2) : Void
 	{
 		x -= v.x; y -= v.y;
@@ -57,47 +57,47 @@ class B2Vec2
 	{
 		x *= a; y *= a;
 	}
-	
+
 	public function mulM(A:B2Mat22) : Void
 	{
 		var tX:Float = x;
 		x = A.col1.x * tX + A.col2.x * y;
 		y = A.col1.y * tX + A.col2.y * y;
 	}
-	
+
 	public function mulTM(A:B2Mat22) : Void
 	{
 		var tX:Float = B2Math.dot(this, A.col1);
 		y = B2Math.dot(this, A.col2);
 		x = tX;
 	}
-	
+
 	public function crossVF(s:Float) : Void
 	{
 		var tX:Float = x;
 		x = s * y;
 		y = -s * tX;
 	}
-	
+
 	public function crossFV(s:Float) : Void
 	{
 		var tX:Float = x;
 		x = -s * y;
 		y = s * tX;
 	}
-	
+
 	public function minV(b:B2Vec2) : Void
 	{
 		x = x < b.x ? x : b.x;
 		y = y < b.y ? y : b.y;
 	}
-	
+
 	public function maxV(b:B2Vec2) : Void
 	{
 		x = x > b.x ? x : b.x;
 		y = y > b.y ? y : b.y;
 	}
-	
+
 	public function abs() : Void
 	{
 		if (x < 0) x = -x;
@@ -108,7 +108,7 @@ class B2Vec2
 	{
 		return Math.sqrt(x * x + y * y);
 	}
-	
+
 	public function lengthSquared():Float
 	{
 		return (x * x + y * y);
@@ -124,7 +124,7 @@ class B2Vec2
 		var invLength:Float = 1.0 / length;
 		x *= invLength;
 		y *= invLength;
-		
+
 		return length;
 	}
 

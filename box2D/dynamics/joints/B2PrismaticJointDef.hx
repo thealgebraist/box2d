@@ -17,11 +17,11 @@
 */
 
 package box2D.dynamics.joints;
-	
+
 
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2Body;
-	
+
 
 /**
 * Prismatic joint definition. This requires defining a line of
@@ -40,7 +40,7 @@ class B2PrismaticJointDef extends B2JointDef
 		localAnchorA = new B2Vec2();
 		localAnchorB = new B2Vec2();
 		localAxisA = new B2Vec2();
-		
+
 		type = B2JointType.PRISMATIC_JOINT;
 		//localAnchor1.SetZero();
 		//localAnchor2.SetZero();
@@ -53,7 +53,7 @@ class B2PrismaticJointDef extends B2JointDef
 		maxMotorForce = 0.0;
 		motorSpeed = 0.0;
 	}
-	
+
 	public function initialize(bA:B2Body, bB:B2Body, anchor:B2Vec2, axis:B2Vec2) : Void
 	{
 		bodyA = bA;

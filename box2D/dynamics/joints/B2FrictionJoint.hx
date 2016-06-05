@@ -17,7 +17,7 @@
 */
 
 package box2D.dynamics.joints;
-	
+
 
 import box2D.common.math.B2Mat22;
 import box2D.common.math.B2Math;
@@ -53,7 +53,7 @@ class B2FrictionJoint extends B2Joint
 	public override function getAnchorB():B2Vec2{
 		return m_bodyB.getWorldPoint(m_localAnchorB);
 	}
-	
+
 	/** @inheritDoc */
 	public override function getReactionForce(inv_dt:Float):B2Vec2
 	{
@@ -66,47 +66,47 @@ class B2FrictionJoint extends B2Joint
 		//B2_NOT_USED(inv_dt);
 		return inv_dt * m_angularImpulse;
 	}
-	
+
 	public function setMaxForce(force:Float):Void
 	{
 		m_maxForce = force;
 	}
-	
+
 	public function getMaxForce():Float
 	{
 		return m_maxForce;
 	}
-	
+
 	public function setMaxTorque(torque:Float):Void
 	{
 		m_maxTorque = torque;
 	}
-	
+
 	public function getMaxTorque():Float
 	{
 		return m_maxTorque;
 	}
-	
+
 	//--------------- Internals Below -------------------
 
 	/** @private */
 	public function new (def:B2FrictionJointDef){
 		super(def);
-		
+
 		m_localAnchorA = new B2Vec2();
 		m_localAnchorB = new B2Vec2();
 		m_linearMass = new B2Mat22();
 		m_linearImpulse = new B2Vec2();
-		
+
 		m_localAnchorA.setV(def.localAnchorA);
 		m_localAnchorB.setV(def.localAnchorB);
-		
+
 		m_linearMass.setZero();
 		m_angularMass = 0.0;
-		
+
 		m_linearImpulse.setZero();
 		m_angularImpulse = 0.0;
-		
+
 		m_maxForce = def.maxForce;
 		m_maxTorque = def.maxTorque;
 	}
@@ -114,7 +114,7 @@ class B2FrictionJoint extends B2Joint
 	public override function initVelocityConstraints(step:B2TimeStep) : Void {
 		var tMat:B2Mat22;
 		var tX:Float;
-		
+
 		var bA:B2Body = m_bodyA;
 		var bB:B2Body= m_bodyB;
 
@@ -190,9 +190,9 @@ class B2FrictionJoint extends B2Joint
 		}
 
 	}
-	
-	
-	
+
+
+
 	public override function solveVelocityConstraints(step:B2TimeStep): Void{
 		//B2_NOT_USED(step);
 		var tMat:B2Mat22;
@@ -225,7 +225,7 @@ class B2FrictionJoint extends B2Joint
 		tX =  (tMat.col1.x * rBX + tMat.col2.x * rBY);
 		rBY = (tMat.col1.y * rBX + tMat.col2.y * rBY);
 		rBX = tX;
-		
+
 		var maxImpulse:Float;
 
 		// Solve angular friction
@@ -250,7 +250,7 @@ class B2FrictionJoint extends B2Joint
 
 			var impulseV:B2Vec2 = B2Math.mulMV(m_linearMass, new B2Vec2(-CdotX, -CdotY));
 			var oldImpulseV:B2Vec2 = m_linearImpulse.copy();
-			
+
 			m_linearImpulse.add(impulseV);
 
 			maxImpulse = step.dt * m_maxForce;
@@ -279,24 +279,24 @@ class B2FrictionJoint extends B2Joint
 		bB.m_angularVelocity = wB;
 
 	}
-	
+
 	public override function solvePositionConstraints(baumgarte:Float):Bool
 	{
 		//B2_NOT_USED(baumgarte);
-		
+
 		return true;
-		
+
 	}
 
 	private var m_localAnchorA:B2Vec2;
 	private var m_localAnchorB:B2Vec2;
-	
+
 	public var m_linearMass:B2Mat22;
 	public var m_angularMass:Float;
-	
+
 	private var m_linearImpulse:B2Vec2;
 	private var m_angularImpulse:Float;
-	
+
 	private var m_maxForce:Float;
 	private var m_maxTorque:Float;
 }

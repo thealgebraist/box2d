@@ -17,8 +17,8 @@
 */
 
 package box2D.common.math;
-	
-	
+
+
 /**
 * A transform contains translation and rotation. It is used to represent
 * the position and orientation of rigid frames.
@@ -28,25 +28,25 @@ class B2Transform
 	/**
 	* The default constructor does nothing (for performance).
 	*/
-	public function new (pos:B2Vec2=null, r:B2Mat22=null) : Void 
+	public function new (pos:B2Vec2=null, r:B2Mat22=null) : Void
 	{
-		
+
 		position = new B2Vec2 ();
 		R = new B2Mat22 ();
-		
+
 		if (pos != null) {
-			
+
 			position.setV(pos);
 			R.setM(r);
-			
+
 		}
-		
+
 	}
 
 	/**
 	* Initialize using a position vector and a rotation matrix.
 	*/
-	public function initialize(pos:B2Vec2, r:B2Mat22) : Void 
+	public function initialize(pos:B2Vec2, r:B2Mat22) : Void
 	{
 		position.setV(pos);
 		R.setM(r);
@@ -68,15 +68,15 @@ class B2Transform
 		R.setM(x.R);
 
 	}
-	
-	/** 
+
+	/**
 	 * Calculate the angle that the rotation matrix represents.
 	 */
 	public function getAngle():Float
 	{
 		return Math.atan2(R.col1.y, R.col1.x);
 	}
-	 
+
 
 	public var position:B2Vec2;
 	public var R:B2Mat22;

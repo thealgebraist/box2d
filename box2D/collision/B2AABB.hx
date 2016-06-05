@@ -17,7 +17,7 @@
 */
 
 package box2D.collision;
-	
+
 
 import box2D.common.math.B2Math;
 import box2D.common.math.B2Vec2;
@@ -39,21 +39,21 @@ class B2AABB
 		valid = valid && lowerBound.isValid() && upperBound.isValid();
 		return valid;
 	}
-	
+
 	/** Get the center of the AABB. */
 	public function getCenter():B2Vec2
 	{
 		return new B2Vec2( (lowerBound.x + upperBound.x) / 2,
 		                   (lowerBound.y + upperBound.y) / 2);
 	}
-	
+
 	/** Get the extents of the AABB (half-widths). */
 	public function getExtents():B2Vec2
 	{
 		return new B2Vec2( (upperBound.x - lowerBound.x) / 2,
 		                   (upperBound.y - lowerBound.y) / 2);
 	}
-	
+
 	/**
 	 * Is an AABB contained within this one.
 	 */
@@ -66,7 +66,7 @@ class B2AABB
 		result = result && (aabb.upperBound.y <= upperBound.y);
 		return result;
 	}
-	
+
 	// From Real-time Collision Detection, p179.
 	/**
 	 * Perform a precise raycast against the AABB.
@@ -75,22 +75,22 @@ class B2AABB
 	{
 		var tmin:Float = -B2Math.MAX_VALUE;
 		var tmax:Float = B2Math.MAX_VALUE;
-		
+
 		var pX:Float = input.p1.x;
 		var pY:Float = input.p1.y;
 		var dX:Float = input.p2.x - input.p1.x;
 		var dY:Float = input.p2.y - input.p1.y;
 		var absDX:Float = Math.abs(dX);
 		var absDY:Float = Math.abs(dY);
-		
+
 		var normal:B2Vec2 = output.normal;
-		
+
 		var inv_d:Float;
 		var t1:Float;
 		var t2:Float;
 		var t3:Float;
 		var s:Float;
-		
+
 		//x
 		{
 			if (absDX < B2Math.MIN_VALUE)
@@ -104,10 +104,10 @@ class B2AABB
 				inv_d = 1.0 / dX;
 				t1 = (lowerBound.x - pX) * inv_d;
 				t2 = (upperBound.x - pX) * inv_d;
-				
+
 				// Sign of the normal vector
 				s = -1.0;
-				
+
 				if (t1 > t2)
 				{
 					t3 = t1;
@@ -115,7 +115,7 @@ class B2AABB
 					t2 = t3;
 					s = 1.0;
 				}
-				
+
 				// Push the min up
 				if (t1 > tmin)
 				{
@@ -123,10 +123,10 @@ class B2AABB
 					normal.y = 0;
 					tmin = t1;
 				}
-				
+
 				// Pull the max down
 				tmax = Math.min(tmax, t2);
-				
+
 				if (tmin > tmax)
 					return false;
 			}
@@ -144,10 +144,10 @@ class B2AABB
 				inv_d = 1.0 / dY;
 				t1 = (lowerBound.y - pY) * inv_d;
 				t2 = (upperBound.y - pY) * inv_d;
-				
+
 				// Sign of the normal vector
 				s = -1.0;
-				
+
 				if (t1 > t2)
 				{
 					t3 = t1;
@@ -155,7 +155,7 @@ class B2AABB
 					t2 = t3;
 					s = 1.0;
 				}
-				
+
 				// Push the min up
 				if (t1 > tmin)
 				{
@@ -163,19 +163,19 @@ class B2AABB
 					normal.x = 0;
 					tmin = t1;
 				}
-				
+
 				// Pull the max down
 				tmax = Math.min(tmax, t2);
-				
+
 				if (tmin > tmax)
 					return false;
 			}
 		}
-		
+
 		output.fraction = tmin;
 		return true;
 	}
-	
+
 	/**
 	 * Tests if another AABB overlaps this one.
 	 */
@@ -194,7 +194,7 @@ class B2AABB
 
 		return true;
 	}
-	
+
 	/** Combine two AABBs into one. */
 	/*public static function combine(aabb1:B2AABB, aabb2:B2AABB):B2AABB
 	{
@@ -202,7 +202,7 @@ class B2AABB
 		aabb.combine(aabb1, aabb2);
 		return aabb;
 	}*/
-	
+
 	/** Combine two AABBs into one. */
 	public function combine(aabb1:B2AABB, aabb2:B2AABB):Void
 	{
@@ -211,12 +211,12 @@ class B2AABB
 		upperBound.x = Math.max(aabb1.upperBound.x, aabb2.upperBound.x);
 		upperBound.y = Math.max(aabb1.upperBound.y, aabb2.upperBound.y);
 	}
-	
+
 	public function new () {
-		
+
 		lowerBound = new B2Vec2();
 		upperBound = new B2Vec2();
-		
+
 	}
 
 	/** The lower vertex */

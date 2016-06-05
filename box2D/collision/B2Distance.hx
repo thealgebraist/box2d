@@ -44,39 +44,39 @@ private static var s_saveB:Array <Int> = new Array <Int> ();
 public static function distance(output:B2DistanceOutput, cache:B2SimplexCache, input:B2DistanceInput):Void
 {
 	++b2_gjkCalls;
-	
+
 	var proxyA:B2DistanceProxy = input.proxyA;
 	var proxyB:B2DistanceProxy = input.proxyB;
-	
+
 	var transformA:B2Transform = input.transformA;
 	var transformB:B2Transform = input.transformB;
-	
+
 	// Initialize the simplex
 	var simplex:B2Simplex = s_simplex;
 	simplex.readCache(cache, proxyA, transformA, proxyB, transformB);
-	
+
 	// Get simplex vertices as an vector.
 	var vertices:Array <B2SimplexVertex> = simplex.m_vertices;
 	var k_maxIters:Int = 20;
-	
+
 	// These store the vertices of the last simplex so that we
 	// can check for duplicates and preven cycling
 	var saveA:Array <Int> = s_saveA;
 	var saveB:Array <Int> = s_saveB;
 	var saveCount:Int = 0;
-	
+
 	var closestPoint:B2Vec2 = simplex.getClosestPoint();
 	var distanceSqr1:Float = closestPoint.lengthSquared();
 	var distanceSqr2:Float = distanceSqr1;
-	
+
 	var i:Int;
 	var p:B2Vec2;
-	
+
 	// Main iteration loop
 	var iter:Int = 0;
 	while (iter < k_maxIters)
 	{
-		
+
 		// Copy the simplex so that we can identify duplicates
 		saveCount = simplex.m_count;
 		for (i in 0...saveCount)
@@ -84,54 +84,54 @@ public static function distance(output:B2DistanceOutput, cache:B2SimplexCache, i
 			saveA[i] = vertices[i].indexA;
 			saveB[i] = vertices[i].indexB;
 		}
-		
+
 		switch(simplex.m_count)
 		{
 			case 1:
-				
+
 			case 2:
 				simplex.solve2();
-				
+
 			case 3:
 				simplex.solve3();
-				
+
 			default:
 				B2Settings.b2Assert(false);
 		}
-		
+
 		// If we have 3 points, then the origin is in the corresponding triangle.
 		if (simplex.m_count == 3)
 		{
 			break;
 		}
-		
+
 		// Compute the closest point.
 		p = simplex.getClosestPoint();
 		distanceSqr2 = p.lengthSquared();
-		
-		
+
+
 		// Ensure progress
 		if (distanceSqr2 > distanceSqr1)
 		{
 			//break;
 		}
 		distanceSqr1 = distanceSqr2;
-		
+
 		// Get search direction.
 		var d:B2Vec2 = simplex.getSearchDirection();
-		
+
 		// Ensure the search direction is numerically fit.
 		if (d.lengthSquared() < B2Math.MIN_VALUE * B2Math.MIN_VALUE)
 		{
 			// THe origin is probably contained by a line segment or triangle.
 			// Thus the shapes are overlapped.
-			
+
 			// We can't return zero here even though there may be overlap.
 			// In case the simplex is a point, segment or triangle it is very difficult
 			// to determine if the origin is contained in the CSO or very close to it
 			break;
 		}
-		
+
 		// Compute a tentative new simplex vertex using support points
 		var vertex:B2SimplexVertex = vertices[simplex.m_count];
 		vertex.indexA = Std.int (proxyA.getSupport(B2Math.mulTMV(transformA.R, d.getNegative())));
@@ -139,11 +139,11 @@ public static function distance(output:B2DistanceOutput, cache:B2SimplexCache, i
 		vertex.indexB = Std.int (proxyB.getSupport(B2Math.mulTMV(transformB.R, d)));
 		vertex.wB = B2Math.mulX(transformB, proxyB.getVertex(vertex.indexB));
 		vertex.w = B2Math.subtractVV(vertex.wB, vertex.wA);
-		
+
 		// Iteration count is equated to the number of support point calls.
 		++iter;
 		++b2_gjkIters;
-		
+
 		// Check for duplicate support points. This is the main termination criteria.
 		var duplicate:Bool = false;
 		for (i in 0...saveCount)
@@ -154,33 +154,33 @@ public static function distance(output:B2DistanceOutput, cache:B2SimplexCache, i
 				break;
 			}
 		}
-		
+
 		// If we found a duplicate support point we must exist to avoid cycling
 		if (duplicate)
 		{
 			break;
 		}
-		
+
 		// New vertex is ok and needed.
 		++simplex.m_count;
 	}
-	
+
 	b2_gjkMaxIters = Std.int (B2Math.max(b2_gjkMaxIters, iter));
-	
+
 	// Prepare output
 	simplex.getWitnessPoints(output.pointA, output.pointB);
 	output.distance = B2Math.subtractVV(output.pointA, output.pointB).length();
 	output.iterations = iter;
-	
+
 	// Cache the simplex
 	simplex.writeCache(cache);
-	
+
 	// Apply radii if requested.
 	if (input.useRadii)
 	{
 		var rA:Float = proxyA.m_radius;
 		var rB:Float = proxyB.m_radius;
-		
+
 		if (output.distance > rA + rB && output.distance > B2Math.MIN_VALUE)
 		{
 			// Shapes are still not overlapped.

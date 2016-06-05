@@ -17,7 +17,7 @@
 */
 
 package box2D.collision;
-	
+
 
 
 /**
@@ -25,17 +25,17 @@ package box2D.collision;
 */
 class Features
 {
-	
+
 	public function new () {
-		
+
 	}
-	
+
 	/**
 	* The edge that defines the outward contact normal.
 	*/
-	
+
 	public var referenceEdge (get, set):Int;
-	
+
 	private function get_referenceEdge():Int{
 		return _referenceEdge;
 	}
@@ -45,12 +45,12 @@ class Features
 		return value;
 	}
 	public var _referenceEdge:Int = 0;
-	
+
 	/**
 	* The edge most anti-parallel to the reference edge.
 	*/
 	public var incidentEdge (get, set):Int;
-	
+
 	private function get_incidentEdge():Int{
 		return _incidentEdge;
 	}
@@ -60,12 +60,12 @@ class Features
 		return value;
 	}
 	public var _incidentEdge:Int = 0;
-	
+
 	/**
 	* The vertex (0 or 1) on the incident edge that was clipped.
 	*/
 	public var incidentVertex (get, set):Int;
-	
+
 	private function get_incidentVertex():Int{
 		return _incidentVertex;
 	}
@@ -75,12 +75,12 @@ class Features
 		return value;
 	}
 	public var _incidentVertex:Int = 0;
-	
+
 	/**
 	* A value of 1 indicates that the reference edge is on shape2.
 	*/
 	public var flip (get, set):Int;
-	
+
 	private function get_flip():Int{
 		return _flip;
 	}
@@ -90,7 +90,7 @@ class Features
 		return value;
 	}
 	public var _flip:Int = 0;
-	
-	
+
+
 	public var _m_id:B2ContactID;
 }

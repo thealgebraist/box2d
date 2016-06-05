@@ -54,7 +54,7 @@ class B2Contact
 	{
 		return m_manifold;
 	}
-	
+
 	/**
 	 * Get the world manifold
 	 */
@@ -64,26 +64,26 @@ class B2Contact
 		var bodyB:B2Body = m_fixtureB.getBody();
 		var shapeA:B2Shape = m_fixtureA.getShape();
 		var shapeB:B2Shape = m_fixtureB.getShape();
-		
+
 		worldManifold.initialize(m_manifold, bodyA.getTransform(), shapeA.m_radius, bodyB.getTransform(), shapeB.m_radius);
 	}
-	
+
 	/**
 	 * Is this contact touching.
 	 */
 	public function isTouching():Bool
 	{
-		return (m_flags & e_touchingFlag) == e_touchingFlag; 
+		return (m_flags & e_touchingFlag) == e_touchingFlag;
 	}
-	
+
 	/**
 	 * Does this contact generate TOI events for continuous simulation
 	 */
 	public function isContinuous():Bool
 	{
-		return (m_flags & e_continuousFlag) == e_continuousFlag; 
+		return (m_flags & e_continuousFlag) == e_continuousFlag;
 	}
-	
+
 	/**
 	 * Change this to be a sensor or-non-sensor contact.
 	 */
@@ -97,14 +97,14 @@ class B2Contact
 			m_flags &= ~e_sensorFlag;
 		}
 	}
-	
+
 	/**
 	 * Is this contact a sensor?
 	 */
 	public function isSensor():Bool{
 		return (m_flags & e_sensorFlag) == e_sensorFlag;
 	}
-	
+
 	/**
 	 * Enable/disable this contact. This can be used inside the pre-solve
 	 * contact listener. The contact is only disabled for the current
@@ -120,7 +120,7 @@ class B2Contact
 			m_flags &= ~e_enabledFlag;
 		}
 	}
-	
+
 	/**
 	 * Has this contact been disabled?
 	 * @return
@@ -128,14 +128,14 @@ class B2Contact
 	public function isEnabled():Bool {
 		return (m_flags & e_enabledFlag) == e_enabledFlag;
 	}
-	
+
 	/**
 	* Get the next contact in the world's contact list.
 	*/
 	public function getNext():B2Contact{
 		return m_next;
 	}
-	
+
 	/**
 	* Get the first fixture in this contact.
 	*/
@@ -143,7 +143,7 @@ class B2Contact
 	{
 		return m_fixtureA;
 	}
-	
+
 	/**
 	* Get the second fixture in this contact.
 	*/
@@ -151,7 +151,7 @@ class B2Contact
 	{
 		return m_fixtureB;
 	}
-	
+
 	/**
 	 * Flag this contact for filtering. Filtering will occur the next time step.
 	 */
@@ -161,7 +161,7 @@ class B2Contact
 	}
 
 	//--------------- Internals Below -------------------
-	
+
 	// m_flags
 	// enum
 	// This contact should not participate in Solve
@@ -182,76 +182,76 @@ class B2Contact
 
 	public function new ()
 	{
-		
+
 		m_nodeA = new B2ContactEdge();
 		m_nodeB = new B2ContactEdge();
 		m_manifold = new B2Manifold();
 		m_oldManifold = new B2Manifold();
-		
+
 		// Real work is done in Reset
 	}
-	
+
 	/** @private */
 	public function reset(fixtureA:B2Fixture = null, fixtureB:B2Fixture = null):Void
 	{
 		m_flags = e_enabledFlag;
-		
+
 		if (fixtureA == null || fixtureB == null){
 			m_fixtureA = null;
 			m_fixtureB = null;
 			return;
 		}
-		
+
 		if (fixtureA.isSensor() || fixtureB.isSensor())
 		{
 			m_flags |= e_sensorFlag;
 		}
-		
+
 		var bodyA:B2Body = fixtureA.getBody();
 		var bodyB:B2Body = fixtureB.getBody();
-		
+
 		if (bodyA.getType() != DYNAMIC_BODY || bodyA.isBullet() || bodyB.getType() != DYNAMIC_BODY || bodyB.isBullet())
 		{
 			m_flags |= e_continuousFlag;
 		}
-		
+
 		m_fixtureA = fixtureA;
 		m_fixtureB = fixtureB;
-		
+
 		m_manifold.m_pointCount = 0;
-		
+
 		m_prev = null;
 		m_next = null;
-		
+
 		m_nodeA.contact = null;
 		m_nodeA.prev = null;
 		m_nodeA.next = null;
 		m_nodeA.other = null;
-		
+
 		m_nodeB.contact = null;
 		m_nodeB.prev = null;
 		m_nodeB.next = null;
 		m_nodeB.other = null;
 	}
-	
+
 	public function update(listener:B2ContactListener) : Void
 	{
 		// Swap old & new manifold
 		var tManifold:B2Manifold = m_oldManifold;
 		m_oldManifold = m_manifold;
 		m_manifold = tManifold;
-		
+
 		// Re-enable this contact
 		m_flags |= e_enabledFlag;
-		
+
 		var touching:Bool = false;
 		var wasTouching:Bool = (m_flags & e_touchingFlag) == e_touchingFlag;
-		
+
 		var bodyA:B2Body = m_fixtureA.m_body;
 		var bodyB:B2Body = m_fixtureB.m_body;
-		
+
 		var aabbOverlap:Bool = m_fixtureA.m_aabb.testOverlap(m_fixtureB.m_aabb);
-		
+
 		// Is this contat a sensor?
 		if ((m_flags  & e_sensorFlag) != 0)
 		{
@@ -263,7 +263,7 @@ class B2Contact
 				var xfB:B2Transform = bodyB.getTransform();
 				touching = B2Shape.testOverlap(shapeA, xfA, shapeB, xfB);
 			}
-			
+
 			// Sensors don't generate manifolds
 			m_manifold.m_pointCount = 0;
 		}
@@ -278,13 +278,13 @@ class B2Contact
 			{
 				m_flags &= ~e_continuousFlag;
 			}
-			
+
 			if (aabbOverlap)
 			{
 				evaluate();
-				
+
 				touching = m_manifold.m_pointCount > 0;
-				
+
 				// Match old contact ids to new contact ids and copy the
 				// stored impulses to warm start the solver.
 				for (i in 0...m_manifold.m_pointCount)
@@ -318,7 +318,7 @@ class B2Contact
 				bodyB.setAwake(true);
 			}
 		}
-		
+
 		if (touching)
 		{
 			m_flags |= e_touchingFlag;
@@ -347,7 +347,7 @@ class B2Contact
 	//virtual ~b2Contact() {}
 
 	public function evaluate() : Void{}
-	
+
 	private static var s_input:B2TOIInput = new B2TOIInput();
 	public function computeTOI(sweepA:B2Sweep, sweepB:B2Sweep):Float
 	{
@@ -358,7 +358,7 @@ class B2Contact
 		s_input.tolerance = B2Settings.b2_linearSlop;
 		return B2TimeOfImpact.timeOfImpact(s_input);
 	}
-	
+
 	public var m_flags:Int = 0;
 
 	// World pool and list pointers.
@@ -374,6 +374,6 @@ class B2Contact
 
 	public var m_manifold:B2Manifold;
 	public var m_oldManifold:B2Manifold;
-	
+
 	public var m_toi:Float = 0;
 }

@@ -18,27 +18,27 @@
 
 package box2D.collision;
 
-	
+
 /**
  * A node in the dynamic tree. The client does not interact with this directly.
  * @private
  */
-class B2DynamicTreeNode 
+class B2DynamicTreeNode
 {
-	
+
 	public var id:Int;
 	private static var currentID:Int = 0;
-	
+
 	public function new () {
 		aabb = new B2AABB();
 		id = currentID++;
 	}
-	
+
 	public function isLeaf():Bool
 	{
 		return child1 == null;
 	}
-	
+
 	public var userData:Dynamic;
 	public var aabb:B2AABB;
 	public var parent:B2DynamicTreeNode;

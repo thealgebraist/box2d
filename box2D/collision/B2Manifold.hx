@@ -17,7 +17,7 @@
 */
 
 package box2D.collision;
-	
+
 
 import box2D.common.B2Settings;
 import box2D.common.math.B2Vec2;
@@ -76,16 +76,16 @@ class B2Manifold
 		copy.set(this);
 		return copy;
 	}
-	/** The points of contact */	
-	public var m_points:Array <B2ManifoldPoint>;	
-	/** Not used for Type e_points*/	
-	public var m_localPlaneNormal:B2Vec2;	
-	/** Usage depends on manifold type */	
-	public var m_localPoint:B2Vec2;	
+	/** The points of contact */
+	public var m_points:Array <B2ManifoldPoint>;
+	/** Not used for Type e_points*/
+	public var m_localPlaneNormal:B2Vec2;
+	/** Usage depends on manifold type */
+	public var m_localPoint:B2Vec2;
 	public var m_type:B2ManifoldType;
-	/** The number of manifold points */	
+	/** The number of manifold points */
 	public var m_pointCount:Int;
-	
+
 	//enum Type
 	//public static var e_circles:Int = 0x0001;
 	//public static var e_faceA:Int = 0x0002;

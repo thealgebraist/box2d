@@ -37,7 +37,7 @@ import box2D.common.math.B2Vec2;
 class B2EdgeShape extends B2Shape
 {
 	/**
-	* Returns false. Edges cannot contain points. 
+	* Returns false. Edges cannot contain points.
 	*/
 	public override function testPoint(transform:B2Transform, p:B2Vec2) : Bool{
 		return false;
@@ -51,19 +51,19 @@ class B2EdgeShape extends B2Shape
 		var tMat:B2Mat22;
 		var rX: Float = input.p2.x - input.p1.x;
 		var rY: Float = input.p2.y - input.p1.y;
-		
+
 		//b2Vec2 v1 = b2Mul(transform, m_v1);
 		tMat = transform.R;
 		var v1X: Float = transform.position.x + (tMat.col1.x * m_v1.x + tMat.col2.x * m_v1.y);
 		var v1Y: Float = transform.position.y + (tMat.col1.y * m_v1.x + tMat.col2.y * m_v1.y);
-		
+
 		//b2Vec2 n = b2Cross(d, 1.0);
 		var nX: Float = transform.position.y + (tMat.col1.y * m_v2.x + tMat.col2.y * m_v2.y) - v1Y;
 		var nY: Float = -(transform.position.x + (tMat.col1.x * m_v2.x + tMat.col2.x * m_v2.y) - v1X);
-		
+
 		var k_slop: Float = 100.0 * B2Math.MIN_VALUE;
 		var denom: Float = -(rX * nX + rY * nY);
-	
+
 		// Cull back facing collision and ignore parallel segments.
 		if (denom > k_slop)
 		{
@@ -71,11 +71,11 @@ class B2EdgeShape extends B2Shape
 			var bX: Float = input.p1.x - v1X;
 			var bY: Float = input.p1.y - v1Y;
 			var a: Float = (bX * nX + bY * nY);
-	
+
 			if (0.0 <= a && a <= input.maxFraction * denom)
 			{
 				var mu2: Float = -rX * bY + rY * bX;
-	
+
 				// Does the segment intersect this segment?
 				if (-k_slop * denom <= mu2 && mu2 <= denom * (1.0 + k_slop))
 				{
@@ -88,7 +88,7 @@ class B2EdgeShape extends B2Shape
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -127,7 +127,7 @@ class B2EdgeShape extends B2Shape
 		massData.center.setV(m_v1);
 		massData.I = 0;
 	}
-	
+
 	/**
 	* @inheritDoc
 	*/
@@ -141,10 +141,10 @@ class B2EdgeShape extends B2Shape
 		// We are relying on v0 being consistent between multiple edges of the same body
 		//b2Vec2 v0 = offset * normal;
 		var v0:B2Vec2 = new B2Vec2(normal.x * offset, normal.y * offset);
-		
+
 		var v1:B2Vec2 = B2Math.mulX(xf, m_v1);
 		var v2:B2Vec2 = B2Math.mulX(xf, m_v2);
-		
+
 		var d1:Float = B2Math.dot(normal, v1) - offset;
 		var d2:Float = B2Math.dot(normal, v2) - offset;
 		if (d1 > 0)
@@ -177,7 +177,7 @@ class B2EdgeShape extends B2Shape
 		// Area weighted centroid
 		c.x = (v0.x + v1.x + v2.x) / 3;
 		c.y = (v0.y + v1.y + v2.y) / 3;
-		
+
 		//b2Vec2 e1 = v1 - v0;
 		//b2Vec2 e2 = v2 - v0;
 		//return 0.5f * b2Cross(e1, e2);
@@ -227,7 +227,7 @@ class B2EdgeShape extends B2Shape
 	{
 		return m_coreV2;
 	}
-	
+
 	/**
 	* Get a perpendicular unit vector, pointing
 	* from the solid side to the empty side.
@@ -236,8 +236,8 @@ class B2EdgeShape extends B2Shape
 	{
 		return m_normal;
 	}
-	
-	
+
+
 	/**
 	* Get a parallel unit vector, pointing
 	* from vertex1 to vertex2.
@@ -246,25 +246,25 @@ class B2EdgeShape extends B2Shape
 	{
 		return m_direction;
 	}
-	
+
 	/**
-	* Returns a unit vector halfway between 
+	* Returns a unit vector halfway between
 	* m_direction and m_prevEdge.m_direction.
 	*/
 	public function getCorner1Vector(): B2Vec2
 	{
 		return m_cornerDir1;
 	}
-	
+
 	/**
-	* Returns a unit vector halfway between 
+	* Returns a unit vector halfway between
 	* m_direction and m_nextEdge.m_direction.
 	*/
 	public function getCorner2Vector(): B2Vec2
 	{
 		return m_cornerDir2;
 	}
-	
+
 	/**
 	* Returns true if the first corner of this edge
 	* bends towards the solid side.
@@ -273,10 +273,10 @@ class B2EdgeShape extends B2Shape
 	{
 		return m_cornerConvex1;
 	}
-	
+
 	/**
 	* Returns true if the second corner of this edge
-	* bends towards the solid side. 
+	* bends towards the solid side.
 	*/
 	public function corner2IsConvex(): Bool
 	{
@@ -293,7 +293,7 @@ class B2EdgeShape extends B2Shape
 		return new B2Vec2(xf.position.x + (tMat.col1.x * m_coreV1.x + tMat.col2.x * m_coreV1.y),
 		                  xf.position.y + (tMat.col1.y * m_coreV1.x + tMat.col2.y * m_coreV1.y));
 	}
-	
+
 	/**
 	* Get the next edge in the chain.
 	*/
@@ -301,7 +301,7 @@ class B2EdgeShape extends B2Shape
 	{
 		return m_nextEdge;
 	}
-	
+
 	/**
 	* Get the previous edge in the chain.
 	*/
@@ -320,11 +320,11 @@ class B2EdgeShape extends B2Shape
 		//b2Vec2 v1 = b2Mul(xf, m_coreV1);
 		var v1X:Float = xf.position.x + (tMat.col1.x * m_coreV1.x + tMat.col2.x * m_coreV1.y);
 		var v1Y:Float = xf.position.y + (tMat.col1.y * m_coreV1.x + tMat.col2.y * m_coreV1.y);
-		
+
 		//b2Vec2 v2 = b2Mul(xf, m_coreV2);
 		var v2X:Float = xf.position.x + (tMat.col1.x * m_coreV2.x + tMat.col2.x * m_coreV2.y);
 		var v2Y:Float = xf.position.y + (tMat.col1.y * m_coreV2.x + tMat.col2.y * m_coreV2.y);
-		
+
 		if ((v1X * dX + v1Y * dY) > (v2X * dX + v2Y * dY)) {
 			s_supportVec.x = v1X;
 			s_supportVec.y = v1Y;
@@ -334,7 +334,7 @@ class B2EdgeShape extends B2Shape
 		}
 		return s_supportVec;
 	}
-	
+
 	//--------------- Internals Below -------------------
 
 	/**
@@ -342,39 +342,39 @@ class B2EdgeShape extends B2Shape
 	*/
 	public function new (v1: B2Vec2, v2: B2Vec2){
 		super();
-		
+
 		s_supportVec = new B2Vec2();
 		m_v1 = new B2Vec2();
 		m_v2 = new B2Vec2();
-		
+
 		m_coreV1 = new B2Vec2();
 		m_coreV2 = new B2Vec2();
-		
+
 		m_normal = new B2Vec2();
-		
+
 		m_direction = new B2Vec2();
-		
+
 		m_cornerDir1 = new B2Vec2();
-		
+
 		m_cornerDir2 = new B2Vec2();
-		
+
 		m_type = B2ShapeType.EDGE_SHAPE;
-		
+
 		m_prevEdge = null;
 		m_nextEdge = null;
-		
+
 		m_v1 = v1;
 		m_v2 = v2;
-		
+
 		m_direction.set(m_v2.x - m_v1.x, m_v2.y - m_v1.y);
 		m_length = m_direction.normalize();
 		m_normal.set(m_direction.y, -m_direction.x);
-		
+
 		m_coreV1.set(-B2Settings.b2_toiSlop * (m_normal.x - m_direction.x) + m_v1.x,
 		             -B2Settings.b2_toiSlop * (m_normal.y - m_direction.y) + m_v1.y);
 		m_coreV2.set(-B2Settings.b2_toiSlop * (m_normal.x + m_direction.x) + m_v2.x,
 		             -B2Settings.b2_toiSlop * (m_normal.y + m_direction.y) + m_v2.y);
-		
+
 		m_cornerDir1 = m_normal;
 		m_cornerDir2.set(-m_normal.x, -m_normal.y);
 	}
@@ -389,7 +389,7 @@ class B2EdgeShape extends B2Shape
 		m_cornerDir1 = cornerDir;
 		m_cornerConvex1 = convex;
 	}
-	
+
 	/**
 	* @private
 	*/
@@ -403,24 +403,24 @@ class B2EdgeShape extends B2Shape
 
 	public var m_v1:B2Vec2;
 	public var m_v2:B2Vec2;
-	
+
 	public var m_coreV1:B2Vec2;
 	public var m_coreV2:B2Vec2;
-	
+
 	public var m_length:Float;
-	
+
 	public var m_normal:B2Vec2;
-	
+
 	public var m_direction:B2Vec2;
-	
+
 	public var m_cornerDir1:B2Vec2;
-	
+
 	public var m_cornerDir2:B2Vec2;
-	
+
 	public var m_cornerConvex1:Bool;
 	public var m_cornerConvex2:Bool;
-	
+
 	public var m_nextEdge:B2EdgeShape;
 	public var m_prevEdge:B2EdgeShape;
-	
+
 }

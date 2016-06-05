@@ -17,31 +17,31 @@
 */
 
 package box2D.collision;
-	
+
 
 import box2D.collision.B2ContactID;
 import box2D.common.math.B2Vec2;
-	
-	
+
+
 /**
 * @private
 */
 class ClipVertex
 {
-	
+
 	public function new () {
-		
+
 		v = new B2Vec2();
 		id = new B2ContactID();
-		
+
 	}
-	
+
 	public function set(other:ClipVertex):Void
 	{
 		v.setV(other.v);
 		id.set(other.id);
 	}
-	
+
 	public var v:B2Vec2;
 	public var id:B2ContactID;
 }

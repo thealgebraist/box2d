@@ -18,7 +18,7 @@
 
 package box2D.dynamics.joints;
 
-	
+
 import box2D.dynamics.B2Body;
 import box2D.common.math.B2Vec2;
 
@@ -39,7 +39,7 @@ class B2DistanceJointDef extends B2JointDef
 		super ();
 		localAnchorA = new B2Vec2 ();
 		localAnchorB = new B2Vec2 ();
-		
+
 		type = B2JointType.DISTANCE_JOINT;
 		//localAnchor1.Set(0.0, 0.0);
 		//localAnchor2.Set(0.0, 0.0);
@@ -47,7 +47,7 @@ class B2DistanceJointDef extends B2JointDef
 		frequencyHz = 0.0;
 		dampingRatio = 0.0;
 	}
-	
+
 	/**
 	* Initialize the bodies, anchors, and length using the world
 	* anchors.

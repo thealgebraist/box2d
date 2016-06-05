@@ -38,7 +38,7 @@ class B2Joint
 	public function getType():B2JointType{
 		return m_type;
 	}
-	
+
 	/**
 	* Get the anchor point on bodyA in world coordinates.
 	*/
@@ -47,7 +47,7 @@ class B2Joint
 	* Get the anchor point on bodyB in world coordinates.
 	*/
 	public function getAnchorB():B2Vec2 { return null; }
-	
+
 	/**
 	* Get the reaction force on body2 at the joint anchor in Newtons.
 	*/
@@ -56,7 +56,7 @@ class B2Joint
 	* Get the reaction torque on body2 in N*m.
 	*/
 	public function getReactionTorque(inv_dt:Float):Float { return 0.0; }
-	
+
 	/**
 	* Get the first body attached to this joint.
 	*/
@@ -64,7 +64,7 @@ class B2Joint
 	{
 		return m_bodyA;
 	}
-	
+
 	/**
 	* Get the second body attached to this joint.
 	*/
@@ -101,12 +101,12 @@ class B2Joint
 	public function isActive():Bool {
 		return m_bodyA.isActive() && m_bodyB.isActive();
 	}
-	
+
 	//--------------- Internals Below -------------------
 
 	static public function create(def:B2JointDef, allocator:Dynamic):B2Joint{
 		var joint:B2Joint = null;
-		
+
 		switch (def.type)
 		{
 		case DISTANCE_JOINT:
@@ -114,62 +114,62 @@ class B2Joint
 				//void* mem = allocator->Allocate(sizeof(b2DistanceJoint));
 				joint = new B2DistanceJoint(cast (def, B2DistanceJointDef));
 			}
-		
+
 		case MOUSE_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2MouseJoint));
 				joint = new B2MouseJoint(cast (def, B2MouseJointDef));
 			}
-		
+
 		case PRISMATIC_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2PrismaticJoint));
 				joint = new B2PrismaticJoint(cast (def, B2PrismaticJointDef));
 			}
-		
+
 		case REVOLUTE_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2RevoluteJoint));
 				joint = new B2RevoluteJoint(cast (def, B2RevoluteJointDef));
 			}
-		
+
 		case PULLEY_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2PulleyJoint));
 				joint = new B2PulleyJoint(cast (def, B2PulleyJointDef));
 			}
-		
+
 		case GEAR_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2GearJoint));
 				joint = new B2GearJoint(cast (def, B2GearJointDef));
 			}
-		
+
 		case LINE_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2LineJoint));
 				joint = new B2LineJoint(cast (def, B2LineJointDef));
 			}
-			
+
 		case WELD_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2WeldJoint));
 				joint = new B2WeldJoint(cast (def, B2WeldJointDef));
 			}
-			
+
 		case FRICTION_JOINT:
 			{
 				//void* mem = allocator->Allocate(sizeof(b2FrictionJoint));
 				joint = new B2FrictionJoint(cast (def, B2FrictionJointDef));
 			}
-			
+
 		default:
 			//b2Settings.b2Assert(false);
 		}
-		
+
 		return joint;
 	}
-	
+
 	static public function destroy(joint:B2Joint, allocator:Dynamic) : Void{
 		/*joint->~b2Joint();
 		switch (joint.m_type)
@@ -177,39 +177,39 @@ class B2Joint
 		case e_distanceJoint:
 			allocator->Free(joint, sizeof(b2DistanceJoint));
 			break;
-		
+
 		case e_mouseJoint:
 			allocator->Free(joint, sizeof(b2MouseJoint));
 			break;
-		
+
 		case e_prismaticJoint:
 			allocator->Free(joint, sizeof(b2PrismaticJoint));
 			break;
-		
+
 		case e_revoluteJoint:
 			allocator->Free(joint, sizeof(b2RevoluteJoint));
 			break;
-		
+
 		case e_pulleyJoint:
 			allocator->Free(joint, sizeof(b2PulleyJoint));
 			break;
-		
+
 		case e_gearJoint:
 			allocator->Free(joint, sizeof(b2GearJoint));
 			break;
-		
+
 		case e_lineJoint:
 			allocator->Free(joint, sizeof(b2LineJoint));
 			break;
-			
+
 		case e_weldJoint:
 			allocator->Free(joint, sizeof(b2WeldJoint));
 			break;
-			
+
 		case e_frictionJoint:
 			allocator->Free(joint, sizeof(b2FrictionJoint));
 			break;
-		
+
 		default:
 			b2Assert(false);
 			break;
@@ -218,12 +218,12 @@ class B2Joint
 
 	/** @private */
 	public function new (def:B2JointDef) {
-		
+
 		m_edgeA = new B2JointEdge();
 		m_edgeB = new B2JointEdge();
 		m_localCenterA = new B2Vec2();
 		m_localCenterB = new B2Vec2();
-		
+
 		B2Settings.b2Assert(def.bodyA != def.bodyB);
 		m_type = def.type;
 		m_prev = null;
@@ -255,7 +255,7 @@ class B2Joint
 	public var m_collideConnected:Bool;
 
 	private var m_userData:Dynamic;
-	
+
 	// Cache here per time step to reduce cache misses.
 	public var m_localCenterA:B2Vec2;
 	public var m_localCenterB:B2Vec2;
@@ -263,9 +263,9 @@ class B2Joint
 	public var m_invMassB:Float;
 	public var m_invIA:Float;
 	public var m_invIB:Float;
-	
+
 	// ENUMS
-	
+
 	// enum b2JointType
 	//static public var e_unknownJoint:Int = 0;
 	//static public var e_revoluteJoint:Int = 1;
@@ -283,5 +283,5 @@ class B2Joint
 	//static public var e_atLowerLimit:Int = 1;
 	//static public var e_atUpperLimit:Int = 2;
 	//static public var e_equalLimits:Int = 3;
-	
+
 }

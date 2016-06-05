@@ -26,7 +26,7 @@ package box2D.dynamics;
 class B2ContactFilter
 {
 	public function new () {
-		
+
 	}
 
 	/**
@@ -36,16 +36,16 @@ class B2ContactFilter
 	public function shouldCollide(fixtureA:B2Fixture, fixtureB:B2Fixture) : Bool {
 		var filter1:B2FilterData = fixtureA.getFilterData();
 		var filter2:B2FilterData = fixtureB.getFilterData();
-		
+
 		if (filter1.groupIndex == filter2.groupIndex && filter1.groupIndex != 0)
 		{
 			return filter1.groupIndex > 0;
 		}
-		
+
 		var collide:Bool = (filter1.maskBits & filter2.categoryBits) != 0 && (filter1.categoryBits & filter2.maskBits) != 0;
 		return collide;
 	}
-	
+
 	/**
 	* Return true if the given fixture should be considered for ray intersection.
 	* By default, userData is cast as a b2Fixture and collision is resolved according to ShouldCollide
@@ -60,7 +60,7 @@ class B2ContactFilter
 			return true;
 		return shouldCollide(cast (userData, B2Fixture),fixture);
 	}
-	
+
 	static public var b2_defaultFilter:B2ContactFilter = new B2ContactFilter();
-	
+
 }

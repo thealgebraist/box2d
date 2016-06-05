@@ -27,15 +27,15 @@ package box2D.dynamics;
 */
 class B2FilterData
 {
-	
+
 	public function new () {
-		
+
 		categoryBits = 0x0001;
 		maskBits = 0xFFFF;
 		groupIndex = 0;
-		
+
 	}
-	
+
 	public function copy() : B2FilterData {
 		var copy: B2FilterData = new B2FilterData();
 		copy.categoryBits = categoryBits;
@@ -43,7 +43,7 @@ class B2FilterData
 		copy.groupIndex = groupIndex;
 		return copy;
 	}
-	
+
 	/**
 	* The collision category bits. Normally you would just set one bit.
 	*/

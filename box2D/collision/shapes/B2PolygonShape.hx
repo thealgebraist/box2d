@@ -357,12 +357,12 @@ class B2PolygonShape extends B2Shape
 		return false;
 	}
 
-
 	/**
 	 * @inheritDoc
 	 */
 	public override function computeAABB(aabb:B2AABB, xf:B2Transform) : Void
 	{
+		// If null exception from here then you are probably missing a setAsBox() call.
 		//var lower:B2Vec2 = b2Math.MulX(xf, m_vertices[0]);
 		var tMat:B2Mat22 = xf.R;
 		var tVec:B2Vec2 = m_vertices[0];

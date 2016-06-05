@@ -16,10 +16,10 @@
 //===========================================================
 	import flash.display.*;
 	import flash.events.*;
-	
-	
+
+
 	class Input{
-		
+
 
 		//======================
 		// member data
@@ -29,14 +29,14 @@
 		static private var keyState:Array<Float> = new Array() ;
 		private var keyArr:Array<UInt> = new Array();
 		var arr2d = new Array<Array<UInt>>();
-		
+
 		private var keyBuffer:Array<Array<Int>> = new Array();
 		static private var bufferSize:Int;
-		
+
 		// last key pressed
 		static public var lastKey:Int = 0;
 		static public var timeSinceLastKey:UInt = 0;
-		
+
 		// mouse states
 		public static var mouseDown:Bool = false;
 		static public var mouseReleased:Bool = false;
@@ -49,20 +49,20 @@
 		static public var mouseDragX:Float = 0;
 		static public var mouseDragY:Float = 0;
 		static public var mouse:Sprite = new Sprite();
-		
+
 		// stage
-		static public var m_stageMc;		
+		static public var m_stageMc;
 		//======================
 		// constructor
 		//======================
 		public function new(stageMc:Sprite){
-			
+
 			m_stageMc = stageMc;
-			
+
 			// init ascii array
 			//ascii = new Array(222);
 			fillAscii();
-			
+
 			// init key state array
 			//keyState = new Array(222);
 			//keyArr = new Array();
@@ -72,7 +72,7 @@
 					keyArr.push(i);
 				}
 			}
-			
+
 			// buffer
 			bufferSize = 5;
 			//keyBuffer = new Array(bufferSize);
@@ -81,30 +81,30 @@
 			}
 			// add key listeners
 			stageMc.stage.addEventListener(KeyboardEvent.KEY_DOWN, keyPress, false, 0, true);
-			stageMc.stage.addEventListener(KeyboardEvent.KEY_UP, keyRelease, false, 0, true);		
-			
+			stageMc.stage.addEventListener(KeyboardEvent.KEY_UP, keyRelease, false, 0, true);
+
 			// mouse listeners
 			stageMc.stage.addEventListener(MouseEvent.MOUSE_DOWN, mousePress, false, 0);
 			stageMc.stage.addEventListener(MouseEvent.CLICK, this.mouseRelease, false, 0,true);
 			stageMc.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.mouseMove, false, 0, true);
 			stageMc.stage.addEventListener(Event.MOUSE_LEAVE, mouseLeave, false, 0, true);
-			
+
 			//trace(stageMc + " -> " +  stageMc.numChildren);
-			
+
 			mouse.graphics.lineStyle(0.1, 0, 100);
 			mouse.graphics.moveTo(0,0);
 			mouse.graphics.lineTo(0,0.1);
-			
+
 		}
-		
-		
-		
+
+
+
 		//======================
 		// update
 		//======================
 		public function update():Void
 		{
-			
+
 			// array of used keys
 			/*var kArr:Array = new Array(
 				Globals.keyP1Up,
@@ -119,28 +119,28 @@
 				Globals.keyInvertBg,
 				Globals.keyChangeBg,
 				Globals.keyPauseGame);*/
-				
+
 			// update used keys
 			for (i in 0...keyArr.length){
 				if (keyState[keyArr[i]] != 0){
 					keyState[keyArr[i]]++;
 				}
 			}
-			
+
 			// update buffer
 			for (j in 0...bufferSize){
 				keyBuffer[j][1]++;
 			}
-			
+
 			// end mouse release
 			mouseReleased = false;
 			mousePressed = false;
 			mouseOver = false;
-			
+
 		}
-		
-		
-		
+
+
+
 		//======================
 		// mousePress listener
 		//======================
@@ -150,9 +150,9 @@
 			mouseDragX = 0;
 			mouseDragY = 0;
 		}
-		
-		
-		
+
+
+
 		//======================
 		// mousePress listener
 		//======================
@@ -161,9 +161,9 @@
 			mouseReleased = true;
 			//trace("I am realeased");
 		}
-		
-		
-		
+
+
+
 		//======================
 		// mousePress listener
 		//======================
@@ -171,14 +171,14 @@
 			mouseReleased = mouseDown;
 			mouseDown = false;
 		}
-		
-		
-		
+
+
+
 		//======================
 		// mouseMove listener
 		//======================
 		public function mouseMove(e:MouseEvent):Void{
-			
+
 			// Fix mouse release not being registered from mouse going off stage
 			if (mouseDown != e.buttonDown){
 				mouseDown = e.buttonDown;
@@ -187,11 +187,11 @@
 				mouseDragX = 0;
 				mouseDragY = 0;
 			}
-			
+
 			mouseX = e.stageX - m_stageMc.x;
 			mouseY = e.stageY - m_stageMc.y;
 			//trace("mx: " + mouseX + ", my: " + mouseY);
-			
+
 			// Store offset
 			mouseOffsetX = mouseX - mouse.x;
 			mouseOffsetY = mouseY - mouse.y;
@@ -203,9 +203,9 @@
 			mouse.x = mouseX;
 			mouse.y = mouseY;
 		}
-		
-		
-		
+
+
+
 		//======================
 		// getKeyHold
 		//======================
@@ -213,17 +213,17 @@
 {
 			return Std.int(Math.max(0, keyState[k]));
 		}
-		
-		
+
+
 		//======================
 		// isKeyDown
 		//======================
 		static public function isKeyDown(k:Int):Bool{
 			return (keyState[k] > 0);
 		}
-		
-		
-		
+
+
+
 		//======================
 		//  isKeyPressed
 		//======================
@@ -231,48 +231,48 @@
 			timeSinceLastKey = 0;
 			return (keyState[k] == 1);
 		}
-		
-		
-		
+
+
+
 		//======================
 		//  isKeyReleased
 		//======================
 		static public function isKeyReleased(k:Int):Bool{
 			return (keyState[k] == -1);
 		}
-		
-		
-		
+
+
+
 		//======================
 		// isKeyInBuffer
 		//======================
 		public function isKeyInBuffer(k:Int, i:Int, t:Int):Bool{
 			return (keyBuffer[i][0] == k && keyBuffer[i][1] <= t);
 		}
-		
-		
-		
+
+
+
 		//======================
 		// keyPress function
 		//======================
 		public function keyPress(e:KeyboardEvent):Void{
-			
+
 			//strace ( e.keyCode + " : " + ascii[e.keyCode] );
-			
+
 			// set keyState
 			keyState[e.keyCode] = Math.max(keyState[e.keyCode], 1);
-			
+
 			// last key (for key config)
 			lastKey = e.keyCode;
-			
+
 		}
-		
+
 		//======================
 		// keyRelease function
 		//======================
 		public function keyRelease(e:KeyboardEvent):Void{
 			keyState[e.keyCode] = -1;
-			
+
 			// add to key buffer
 			/*for (var i:int = bufferSize-1; i > 0 ; i--){
 				keyBuffer[i] = keyBuffer[i - 1];
@@ -285,17 +285,17 @@
 				}
 			keyBuffer[0] = [e.keyCode, 0];
 		}
-		
-		
-		
+
+
+
 		//======================
 		// get key string
 		//======================
 		static public function getKeyString(k:UInt):String{
 			return ascii[k];
 		}
-		
-		
+
+
 		//======================
 		// set up ascii text
 		//======================
@@ -387,11 +387,11 @@
 			ascii[8] = "Backspace";
 			//ascii[27] = "ESC";
 		}
-		
+
 
 	}
-	
-	
+
+
 
 
 

@@ -18,22 +18,21 @@
 package box2D.collision;
 
 import box2D.common.math.B2Vec2;
-	
+
 /**
  * Output for b2Distance.
  */
-class B2DistanceOutput 
+class B2DistanceOutput
 {
-	
+
 	public function new () {
-		
+
 		pointA = new B2Vec2 ();
 		pointB = new B2Vec2 ();
-		
+
 	}
-	
+
 /** Closest point on shapea */	public var  pointA:B2Vec2;	/** Closest point on shapeb */	public var pointB:B2Vec2;		public var distance:Float;
-/** Number of gjk iterations used */	public var iterations:Int;	
+/** Number of gjk iterations used */	public var iterations:Int;
 
 }
-	

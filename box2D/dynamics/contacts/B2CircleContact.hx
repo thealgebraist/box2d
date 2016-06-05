@@ -43,13 +43,13 @@ class B2CircleContact extends B2Contact
 		//b2Settings.b2Assert(m_shape2.m_type == B2ShapeType.CIRCLE_SHAPE);
 	}
 	//~b2CircleContact() {}
-	
+
 	public override function evaluate() : Void{
 		var bA:B2Body = m_fixtureA.getBody();
 		var bB:B2Body = m_fixtureB.getBody();
-		
-		B2Collision.collideCircles(m_manifold, 
-					cast (m_fixtureA.getShape(), B2CircleShape), bA.m_xf, 
+
+		B2Collision.collideCircles(m_manifold,
+					cast (m_fixtureA.getShape(), B2CircleShape), bA.m_xf,
 					cast (m_fixtureB.getShape(), B2CircleShape), bB.m_xf);
 	}
 }

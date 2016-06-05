@@ -17,11 +17,11 @@
 */
 
 package box2D.dynamics.contacts;
-	
+
 
 import box2D.dynamics.B2Body;
 
-	
+
 /**
 * A contact edge is used to connect bodies and contacts together
 * in a contact graph where each body is a node and each contact

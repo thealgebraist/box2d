@@ -28,18 +28,18 @@ import box2D.dynamics.B2TimeStep;
  * Applies a force every frame
  */
 class B2ConstantForceController extends B2Controller
-{	
+{
 	/**
 	 * The force to apply
 	 */
 	public var F:B2Vec2;
-	
+
 	public function new () {
-		
+
 		F = new B2Vec2(0, 0);
-		
+
 	}
-	
+
 	public override function step(step:B2TimeStep):Void {
 		var i:B2ControllerEdge=m_bodyList;
 		while (i != null){

@@ -63,12 +63,12 @@ class B2MouseJoint extends B2Joint
 	{
 		return 0.0;
 	}
-	
+
 	public function getTarget():B2Vec2
 	{
 		return m_target;
 	}
-	
+
 	/**
 	 * Use this to update the target point.
 	 */
@@ -84,59 +84,59 @@ class B2MouseJoint extends B2Joint
 	{
 		return m_maxForce;
 	}
-	
+
 	/// Set the maximum force in Newtons.
 	public function setMaxForce(maxForce:Float):Void
 	{
 		m_maxForce = maxForce;
 	}
-	
+
 	/// Get frequency in Hz
 	public function getFrequency():Float
 	{
 		return m_frequencyHz;
 	}
-	
+
 	/// Set the frequency in Hz
 	public function setFrequency(hz:Float):Void
 	{
 		m_frequencyHz = hz;
 	}
-	
+
 	/// Get damping ratio
 	public function getDampingRatio():Float
 	{
 		return m_dampingRatio;
 	}
-	
+
 	/// Set damping ratio
 	public function setDampingRatio(ratio:Float):Void
 	{
 		m_dampingRatio = ratio;
 	}
-	
+
 	//--------------- Internals Below -------------------
 
 	/** @private */
 	public function new (def:B2MouseJointDef){
 		super(def);
-		
+
 		K = new B2Mat22();
 		K1 = new B2Mat22();
 		K2 = new B2Mat22();
-		
+
 		m_localAnchor = new B2Vec2();
 		m_target = new B2Vec2();
 		m_impulse = new B2Vec2();
 
 		m_mass = new B2Mat22();
 		m_C = new B2Vec2();
-		
+
 		//b2Settings.b2Assert(def.target.IsValid());
 		//b2Settings.b2Assert(b2Math.b2IsValid(def.maxForce) && def.maxForce > 0.0);
 		//b2Settings.b2Assert(b2Math.b2IsValid(def.frequencyHz) && def.frequencyHz > 0.0);
 		//b2Settings.b2Assert(b2Math.b2IsValid(def.dampingRatio) && def.dampingRatio > 0.0);
-		
+
 		m_target.setV(def.target);
 		//m_localAnchor = b2MulT(m_bodyB.m_xf, m_target);
 		var tX:Float = m_target.x - m_bodyB.m_xf.position.x;
@@ -144,13 +144,13 @@ class B2MouseJoint extends B2Joint
 		var tMat:B2Mat22 = m_bodyB.m_xf.R;
 		m_localAnchor.x = (tX * tMat.col1.x + tY * tMat.col1.y);
 		m_localAnchor.y = (tX * tMat.col2.x + tY * tMat.col2.y);
-		
+
 		m_maxForce = def.maxForce;
 		m_impulse.setZero();
-		
+
 		m_frequencyHz = def.frequencyHz;
 		m_dampingRatio = def.dampingRatio;
-		
+
 		m_beta = 0.0;
 		m_gamma = 0.0;
 	}
@@ -161,18 +161,18 @@ class B2MouseJoint extends B2Joint
 	private var K2:B2Mat22;
 	public override function initVelocityConstraints(step:B2TimeStep): Void{
 		var b:B2Body = m_bodyB;
-		
+
 		var mass:Float = b.getMass();
-		
+
 		// Frequency
 		var omega:Float = 2.0 * Math.PI * m_frequencyHz;
-		
+
 		// Damping co-efficient
 		var d:Float = 2.0 * mass * m_dampingRatio * omega;
-		
+
 		// Spring stiffness
 		var k:Float = mass * omega * omega;
-		
+
 		// magic formulas
 		// gamma has units of inverse mass
 		// beta hs units of inverse time
@@ -180,9 +180,9 @@ class B2MouseJoint extends B2Joint
 		m_gamma = step.dt * (d + step.dt * k);
 		m_gamma = m_gamma != 0 ? 1 / m_gamma:0.0;
 		m_beta = step.dt * k * m_gamma;
-		
+
 		var tMat:B2Mat22;
-		
+
 		// Compute the effective mass matrix.
 		//b2Vec2 r = b2Mul(b->m_xf.R, m_localAnchor - b->GetLocalCenter());
 		tMat = b.m_xf.R;
@@ -191,37 +191,37 @@ class B2MouseJoint extends B2Joint
 		var tX:Float = (tMat.col1.x * rX + tMat.col2.x * rY);
 		rY = (tMat.col1.y * rX + tMat.col2.y * rY);
 		rX = tX;
-		
+
 		// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
 		//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
 		//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
 		var invMass:Float = b.m_invMass;
 		var invI:Float = b.m_invI;
-		
+
 		//b2Mat22 K1;
 		K1.col1.x = invMass;	K1.col2.x = 0.0;
 		K1.col1.y = 0.0;		K1.col2.y = invMass;
-		
+
 		//b2Mat22 K2;
 		K2.col1.x =  invI * rY * rY;	K2.col2.x = -invI * rX * rY;
 		K2.col1.y = -invI * rX * rY;	K2.col2.y =  invI * rX * rX;
-		
+
 		//b2Mat22 K = K1 + K2;
 		K.setM(K1);
 		K.addM(K2);
 		K.col1.x += m_gamma;
 		K.col2.y += m_gamma;
-		
+
 		//m_ptpMass = K.GetInverse();
 		K.getInverse(m_mass);
-		
+
 		//m_C = b.m_position + r - m_target;
 		m_C.x = b.m_sweep.c.x + rX - m_target.x;
 		m_C.y = b.m_sweep.c.y + rY - m_target.y;
-		
+
 		// Cheat with some damping
 		b.m_angularVelocity *= 0.98;
-		
+
 		// Warm starting.
 		m_impulse.x *= step.dtRatio;
 		m_impulse.y *= step.dtRatio;
@@ -231,14 +231,14 @@ class B2MouseJoint extends B2Joint
 		//b.m_angularVelocity += invI * b2Cross(r, m_impulse);
 		b.m_angularVelocity += invI * (rX * m_impulse.y - rY * m_impulse.x);
 	}
-	
+
 	public override function solveVelocityConstraints(step:B2TimeStep) : Void{
 		var b:B2Body = m_bodyB;
-		
+
 		var tMat:B2Mat22;
 		var tX:Float;
 		var tY:Float;
-		
+
 		// Compute the effective mass matrix.
 		//b2Vec2 r = b2Mul(b->m_xf.R, m_localAnchor - b->GetLocalCenter());
 		tMat = b.m_xf.R;
@@ -247,7 +247,7 @@ class B2MouseJoint extends B2Joint
 		tX = (tMat.col1.x * rX + tMat.col2.x * rY);
 		rY = (tMat.col1.y * rX + tMat.col2.y * rY);
 		rX = tX;
-		
+
 		// Cdot = v + cross(w, r)
 		//b2Vec2 Cdot = b->m_linearVelocity + b2Cross(b->m_angularVelocity, r);
 		var CdotX:Float = b.m_linearVelocity.x + (-b.m_angularVelocity * rY);
@@ -258,7 +258,7 @@ class B2MouseJoint extends B2Joint
 		tY = CdotY + m_beta * m_C.y + m_gamma * m_impulse.y;
 		var impulseX:Float = -(tMat.col1.x * tX + tMat.col2.x * tY);
 		var impulseY:Float = -(tMat.col1.y * tX + tMat.col2.y * tY);
-		
+
 		var oldImpulseX:Float = m_impulse.x;
 		var oldImpulseY:Float = m_impulse.y;
 		//m_impulse += impulse;
@@ -273,7 +273,7 @@ class B2MouseJoint extends B2Joint
 		//impulse = m_impulse - oldImpulse;
 		impulseX = m_impulse.x - oldImpulseX;
 		impulseY = m_impulse.y - oldImpulseY;
-		
+
 		//b->m_linearVelocity += b->m_invMass * impulse;
 		b.m_linearVelocity.x += b.m_invMass * impulseX;
 		b.m_linearVelocity.y += b.m_invMass * impulseY;
@@ -281,9 +281,9 @@ class B2MouseJoint extends B2Joint
 		b.m_angularVelocity += b.m_invI * (rX * impulseY - rY * impulseX);
 	}
 
-	public override function solvePositionConstraints(baumgarte:Float):Bool { 
+	public override function solvePositionConstraints(baumgarte:Float):Bool {
 		//B2_NOT_USED(baumgarte);
-		return true; 
+		return true;
 	}
 
 	private var m_localAnchor:B2Vec2;

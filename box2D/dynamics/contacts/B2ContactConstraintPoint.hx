@@ -27,15 +27,15 @@ import box2D.common.math.B2Vec2;
 */
 class B2ContactConstraintPoint
 {
-	
+
 	public function new () {
-		
+
 		localPoint = new B2Vec2 ();
 		rA = new B2Vec2 ();
 		rB = new B2Vec2 ();
-		
+
 	}
-	
+
 	public var localPoint:B2Vec2;
 	public var rA:B2Vec2;
 	public var rB:B2Vec2;

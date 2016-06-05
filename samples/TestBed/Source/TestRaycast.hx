@@ -17,8 +17,8 @@
 */
 
 
-	
-	
+
+
 import box2D.dynamics.*;
 import box2D.collision.*;
 import box2D.collision.shapes.*;
@@ -28,19 +28,19 @@ import box2D.common.*;
 import box2D.common.math.*;
 
 class TestRaycast extends Test{
-		
+
 		public var laser:B2Body;
-		
+
 		public function new()
 		 {
 			super();
 			// Set Text field
 // 			Main.m_aboutText.text = "Raycast";
-			
+
 			m_world.setGravity(new B2Vec2(0,0));
-			
+
 			var ground:B2Body = m_world.getGroundBody();
-			
+
 			var box:B2PolygonShape = new B2PolygonShape();
 			box.setAsBox(30 / m_physScale, 4 / m_physScale);
 			var fd:B2FixtureDef = new B2FixtureDef();
@@ -57,7 +57,7 @@ class TestRaycast extends Test{
 			laser.createFixture(fd);
 			laser.setAngle(0.5);
 			laser.setAngle(Math.PI);
-			
+
 			var circle:B2CircleShape = new B2CircleShape(30 / m_physScale);
 			fd.shape = circle;
 			fd.density = 4;
@@ -68,18 +68,18 @@ class TestRaycast extends Test{
 			var body:B2Body = m_world.createBody(bd);
 			body.createFixture(fd);
 		}
-		
-		
+
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
-		
+
 		public override function Update():Void{
 			super.Update();
-			
+
 			var p1:B2Vec2 = laser.getWorldPoint(new B2Vec2(30.1 / m_physScale, 0));
 			var p2:B2Vec2 = laser.getWorldPoint(new B2Vec2(130.1 / m_physScale, 0));
-			
+
 			var f:B2Fixture = m_world.rayCastOne(p1, p2);
 			var lambda:Float = 1;
 			if (f != null)
@@ -96,4 +96,4 @@ class TestRaycast extends Test{
 
 		}
 	}
-	
+

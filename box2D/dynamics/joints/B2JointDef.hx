@@ -28,7 +28,7 @@ import box2D.dynamics.B2Body;
 */
 class B2JointDef
 {
-	
+
 	public function new ()
 	{
 		type = B2JointType.UNKNOWN_JOINT;
@@ -58,5 +58,5 @@ class B2JointDef
 	* Set this flag to true if the attached bodies should collide.
 	*/
 	public var collideConnected:Bool;
-	
+
 }

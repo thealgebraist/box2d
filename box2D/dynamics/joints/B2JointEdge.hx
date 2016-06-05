@@ -40,5 +40,5 @@ class B2JointEdge
 	/** The previous joint edge in the body's joint list */
 	public var prev:B2JointEdge;
 	/** The next joint edge in the body's joint list */
-	public var next:B2JointEdge;	
+	public var next:B2JointEdge;
 }

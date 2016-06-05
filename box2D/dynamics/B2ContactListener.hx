@@ -36,13 +36,13 @@ import box2D.dynamics.contacts.B2Contact;
  */
 class B2ContactListener
 {
-	
+
 	public function new () {
-		
-		
+
+
 	}
-	
-	
+
+
 	/**
 	 * Called when two fixtures begin to touch.
 	 */
@@ -76,6 +76,6 @@ class B2ContactListener
 	 * Note: this is only called for contacts that are touching, solid, and awake.
 	 */
 	public function postSolve(contact:B2Contact, impulse:B2ContactImpulse):Void { }
-	
+
 	public static var b2_defaultListener:B2ContactListener = new B2ContactListener();
 }

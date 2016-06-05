@@ -34,7 +34,7 @@ class B2Vec3
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	/**
 	 * Sets this vector to all zeros
 	 */
@@ -42,7 +42,7 @@ class B2Vec3
 	{
 		x = y = z = 0.0;
 	}
-	
+
 	/**
 	 * Set this vector to some specified coordinates.
 	 */
@@ -52,30 +52,30 @@ class B2Vec3
 		this.y = y;
 		this.z = z;
 	}
-	
+
 	public function setV(v:B2Vec3):Void
 	{
 		x = v.x;
 		y = v.y;
 		z = v.z;
 	}
-	
+
 	/**
 	 * Negate this vector
 	 */
 	public function getNegative():B2Vec3 { return new B2Vec3( -x, -y, -z); }
-	
+
 	public function negativeSelf():Void { x = -x; y = -y; z = -z; }
-	
+
 	public function copy():B2Vec3{
 		return new B2Vec3(x,y,z);
 	}
-	
+
 	public function add(v:B2Vec3) : Void
 	{
 		x += v.x; y += v.y; z += v.z;
 	}
-	
+
 	public function subtract(v:B2Vec3) : Void
 	{
 		x -= v.x; y -= v.y; z -= v.z;
@@ -85,9 +85,9 @@ class B2Vec3
 	{
 		x *= a; y *= a; z *= a;
 	}
-	
+
 	public var x:Float;
 	public var y:Float;
 	public var z:Float;
-	
+
 }

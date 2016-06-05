@@ -41,5 +41,5 @@ class B2DestructionListener
 	* to the destruction of its parent body.
 	*/
 	public function sayGoodbyeFixture(fixture:B2Fixture) : Void{}
-	
+
 }

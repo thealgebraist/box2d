@@ -34,7 +34,7 @@ class B2SimplexVertex
 		indexA = other.indexA;
 		indexB = other.indexB;
 	}
-	
+
 	public var wA:B2Vec2;		// support point in proxyA
 	public var wB:B2Vec2;		// support point in proxyB
 	public var w:B2Vec2;		// wB - wA

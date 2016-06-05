@@ -22,9 +22,9 @@ import box2D.common.math.B2Transform;
 /**
  * Input for b2Distance.
  * You have to option to use the shape radii
- * in the computation. Even 
+ * in the computation. Even
  */
-class B2DistanceInput 
+class B2DistanceInput
 {
 	public function new () {}
 	public var proxyA:B2DistanceProxy;

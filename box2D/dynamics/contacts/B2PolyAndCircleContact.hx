@@ -33,7 +33,7 @@ import box2D.dynamics.B2Fixture;
 * @private
 */
 class B2PolyAndCircleContact extends B2Contact{
-	
+
 	static public function create(allocator:Dynamic):B2Contact{
 		return new B2PolyAndCircleContact();
 	}
@@ -50,9 +50,9 @@ class B2PolyAndCircleContact extends B2Contact{
 	public override function evaluate(): Void{
 		var bA:B2Body = m_fixtureA.m_body;
 		var bB:B2Body = m_fixtureB.m_body;
-		
-		B2Collision.collidePolygonAndCircle(m_manifold, 
-					cast (m_fixtureA.getShape(), B2PolygonShape), bA.m_xf, 
+
+		B2Collision.collidePolygonAndCircle(m_manifold,
+					cast (m_fixtureA.getShape(), B2PolygonShape), bA.m_xf,
 					cast (m_fixtureB.getShape(), B2CircleShape), bB.m_xf);
 	}
 }

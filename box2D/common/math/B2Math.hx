@@ -25,8 +25,8 @@ import box2D.collision.B2AABB;
 * @private
 */
 class B2Math {
-	
-	
+
+
 	/**
 	* This function is used to ensure that a floating point number is
 	* not a NaN or infinity.
@@ -34,22 +34,22 @@ class B2Math {
 	static public function isValid(x:Float) : Bool
 	{
 		if (Math.isNaN (x) || x == Math.NEGATIVE_INFINITY || x == Math.POSITIVE_INFINITY) {
-			
+
 			return false;
-			
+
 		}
-		
+
 		return true;
 		//return isFinite(x);
 	}
-	
+
 	/*static public function b2InvSqrt(x:Float):Float{
 		union
 		{
 			float32 x;
 			int32 i;
 		} convert;
-		
+
 		convert.x = x;
 		float32 xhalf = 0.5f * x;
 		convert.i = 0x5f3759df - (convert.i >> 1);
@@ -95,7 +95,7 @@ class B2Math {
 		var u:B2Vec2 = new B2Vec2(dot(v, A.col1), dot(v, A.col2));
 		return u;
 	}
-	
+
 	static public function mulX(T:B2Transform, v:B2Vec2) : B2Vec2
 	{
 		var a:B2Vec2 = mulMV(T.R, v);
@@ -126,13 +126,13 @@ class B2Math {
 		var v:B2Vec2 = new B2Vec2(a.x - b.x, a.y - b.y);
 		return v;
 	}
-	
+
 	static public function distance(a:B2Vec2, b:B2Vec2) : Float{
 		var cX:Float = a.x-b.x;
 		var cY:Float = a.y-b.y;
 		return Math.sqrt(cX*cX + cY*cY);
 	}
-	
+
 	static public function distanceSquared(a:B2Vec2, b:B2Vec2) : Float{
 		var cX:Float = a.x-b.x;
 		var cY:Float = a.y-b.y;
@@ -256,64 +256,64 @@ class B2Math {
 		var result:Bool = x > 0 && (x & (x - 1)) == 0;
 		return result;
 	}
-	
-	
+
+
 	// Temp vector functions to reduce calls to 'new'
 	/*static public var tempVec:B2Vec2 = new B2Vec2();
 	static public var tempVec2:B2Vec2 = new B2Vec2();
 	static public var tempVec3:B2Vec2 = new B2Vec2();
 	static public var tempVec4:B2Vec2 = new B2Vec2();
 	static public var tempVec5:B2Vec2 = new B2Vec2();
-	
-	static public var tempMat:B2Mat22 = new B2Mat22();	
-	
+
+	static public var tempMat:B2Mat22 = new B2Mat22();
+
 	static public var tempAABB:B2AABB = new B2AABB();	*/
-	
+
 	static public var b2Vec2_zero:B2Vec2 = new B2Vec2(0.0, 0.0);
 	static public var b2Mat22_identity:B2Mat22 = B2Mat22.fromVV(new B2Vec2(1.0, 0.0), new B2Vec2(0.0, 1.0));
 	static public var b2Transform_identity:B2Transform = new B2Transform(b2Vec2_zero, b2Mat22_identity);
-	
-	
+
+
 	public static var MIN_VALUE (get, null):Float;
 	public static var MAX_VALUE (get, null):Float;
-	
-	
+
+
 	private static inline function get_MIN_VALUE ():Float {
-		
+
 		#if flash
-		
+
 		return untyped __global__ ["Number"].MIN_VALUE;
-		
+
 		#elseif js
-		
+
 		return untyped __js__ ("Number.MIN_VALUE");
-		
+
 		#else
-		
+
 		return 2.2250738585072014e-308;
-		
+
 		#end
-		
+
 	}
-	
-	
+
+
 	private static inline function get_MAX_VALUE ():Float {
-		
+
 		#if flash
-		
+
 		return untyped __global__ ["Number"].MAX_VALUE;
-		
+
 		#elseif js
-		
+
 		return untyped __js__ ("Number.MAX_VALUE");
-		
+
 		#else
-		
+
 		return 1.7976931348623158e+308;
-		
+
 		#end
-		
+
 	}
-	
+
 
 }

@@ -17,8 +17,8 @@
 */
 
 
-	
-	
+
+
 import box2D.dynamics.controllers.B2BuoyancyController;
 import box2D.dynamics.controllers.B2Controller;
 
@@ -29,31 +29,31 @@ import box2D.dynamics.joints.*;
 import box2D.dynamics.contacts.*;
 import box2D.common.*;
 import box2D.common.math.*;
-	
-	
-	
+
+
+
 	class TestBuoyancy extends Test{
-		
+
 		private var m_bodies:Array<B2Body> = new Array();
 		private var m_controller:B2Controller;
-		
+
 		public function new(){
 			super();
 			var bc:B2BuoyancyController = new B2BuoyancyController();
 			m_controller = bc;
-			
+
 			bc.normal.set(0,-1);
 			bc.offset = -200 / m_physScale;
 			bc.density = 2.0;
 			bc.linearDrag = 5;
 			bc.angularDrag = 2;
-			
+
 			var ground:B2Body = m_world.getGroundBody();
 			var i:Int;
 			var anchor:B2Vec2 = new B2Vec2();
 			var body:B2Body;
 			var fd:B2FixtureDef;
-			
+
 			// Spawn in a bunch of crap
 			var boxDef:B2PolygonShape = new B2PolygonShape();
 			//for (i = 0; i < 5; i++)
@@ -75,7 +75,7 @@ import box2D.common.math.*;
 				body = m_world.createBody(bodyDef);
 				body.createFixture(fd);
 				m_bodies.push(body);
-				
+
 			}
 				var circDef:B2CircleShape;
 			//for (i = 0; i < 5; i++)
@@ -113,7 +113,7 @@ import box2D.common.math.*;
 						new B2Vec2(( 10 +Math.random() * 10) / m_physScale, ( 10 +Math.random() * 10) / m_physScale)
 						]);
 				}
-				else if (Math.random() > 0.5) 
+				else if (Math.random() > 0.5)
 				{
 					var array:Array<B2Vec2> = [];
 					array[0] = new B2Vec2(0, (10 +Math.random()*10) / m_physScale);
@@ -125,7 +125,7 @@ import box2D.common.math.*;
 					array[4].multiply(Math.random() / 2 + 0.8);
 					polyDef.setAsArray(array);
 				}
-				else 
+				else
 				{
 					polyDef.setAsArray([
 						new B2Vec2(0, (10 +Math.random()*10) / m_physScale),
@@ -145,10 +145,10 @@ import box2D.common.math.*;
 				m_bodies.push(body);
 
 			}
-			
+
 			//Add some exciting bath toys
 
-				
+
 			boxDef.setAsBox(40 / m_physScale, 10 / m_physScale);
 			fd = new B2FixtureDef();
 			fd.shape = boxDef;
@@ -158,7 +158,7 @@ import box2D.common.math.*;
 			body = m_world.createBody(bodyDef);
 			body.createFixture(fd);
 			m_bodies.push(body);
-			
+
 			bodyDef.position.set(300/ m_physScale, 300 / m_physScale);
 			body = m_world.createBody(bodyDef);
 			circDef = new B2CircleShape(7 / m_physScale);
@@ -169,7 +169,7 @@ import box2D.common.math.*;
 // 			circDef.B2internal:m_p.set(30 / m_physScale, 0 / m_physScale);
 			circDef.setLocalPosition(new B2Vec2(30 / m_physScale, 0 / m_physScale));
 			body.createFixture(fd);
-			
+
 //  			circDef.B2internal::m_p.set(-30 / m_physScale, 0 / m_physScale);
 			circDef.setLocalPosition(new B2Vec2(-30 / m_physScale, 0 / m_physScale));
 			body.createFixture(fd);
@@ -179,7 +179,7 @@ import box2D.common.math.*;
 // 			circDef.B2internal::m_p.set(0 / m_physScale, -30 / m_physScale);
 			circDef.setLocalPosition(new B2Vec2(0 / m_physScale, -30 / m_physScale));
 				body.createFixture(fd);
-			
+
 			fd = new B2FixtureDef();
 			fd.shape = boxDef;
 			fd.density = 2.0;
@@ -193,22 +193,22 @@ import box2D.common.math.*;
 			for(body in m_bodies){
 				m_controller.addBody(body);
 			}
-			
+
 			m_world.addController(m_controller);
-			
+
 			// Set Text field
 // 			Main.m_aboutText.text = "Buoyancy";
-			
+
 		}
-		
-		
-		
+
+
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
-		
+
 		public override function Update():Void{
-			
+
 			super.Update();
 			//Draw water line
 			m_sprite.graphics.lineStyle(1,0x0000ff,1);
@@ -225,4 +225,4 @@ import box2D.common.math.*;
 
 		}
 	}
-	
+

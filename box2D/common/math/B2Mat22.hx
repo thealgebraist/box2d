@@ -17,8 +17,8 @@
 */
 
 package box2D.common.math;
-	
-	
+
+
 /**
 * A 2-by-2 matrix. Stored in column-major order.
 */
@@ -29,14 +29,14 @@ class B2Mat22
 		col1 = new B2Vec2(1.0, 0);
 		col2 = new B2Vec2(0, 1.0);
 	}
-	
+
 	public static function fromAngle(angle:Float):B2Mat22
 	{
 		var mat:B2Mat22 = new B2Mat22();
 		mat.set(angle);
 		return mat;
 	}
-	
+
 	public static function fromVV(c1:B2Vec2, c2:B2Vec2):B2Mat22
 	{
 		var mat:B2Mat22 = new B2Mat22();
@@ -51,25 +51,25 @@ class B2Mat22
 		col1.x = c; col2.x = -s;
 		col1.y = s; col2.y = c;
 	}
-	
+
 	public function setVV(c1:B2Vec2, c2:B2Vec2) : Void
 	{
 		col1.setV(c1);
 		col2.setV(c2);
 	}
-	
+
 	public function copy():B2Mat22{
 		var mat:B2Mat22 = new B2Mat22();
 		mat.setM(this);
 		return mat;
 	}
-	
+
 	public function setM(m:B2Mat22) : Void
 	{
 		col1.setV(m.col1);
 		col2.setV(m.col2);
 	}
-	
+
 	public function addM(m:B2Mat22) : Void
 	{
 		col1.x += m.col1.x;
@@ -77,7 +77,7 @@ class B2Mat22
 		col2.x += m.col2.x;
 		col2.y += m.col2.y;
 	}
-	
+
 	public function setIdentity() : Void
 	{
 		col1.x = 1.0; col2.x = 0.0;
@@ -89,7 +89,7 @@ class B2Mat22
 		col1.x = 0.0; col2.x = 0.0;
 		col1.y = 0.0; col2.y = 0.0;
 	}
-	
+
 	public function getAngle() :Float
 	{
 		return Math.atan2(col1.y, col1.x);
@@ -100,9 +100,9 @@ class B2Mat22
 	 */
 	public function getInverse(out:B2Mat22):B2Mat22
 	{
-		var a:Float = col1.x; 
-		var b:Float = col2.x; 
-		var c:Float = col1.y; 
+		var a:Float = col1.x;
+		var b:Float = col2.x;
+		var c:Float = col1.y;
 		var d:Float = col2.y;
 		//var B:B2Mat22 = new B2Mat22();
 		var det:Float = a * d - b * c;
@@ -114,7 +114,7 @@ class B2Mat22
 		out.col1.y = -det * c;	out.col2.y =  det * a;
 		return out;
 	}
-	
+
 	// Solve A * x = b
 	public function solve(out:B2Vec2, bX:Float, bY:Float):B2Vec2
 	{
@@ -131,10 +131,10 @@ class B2Mat22
 		}
 		out.x = det * (a22 * bX - a12 * bY);
 		out.y = det * (a11 * bY - a21 * bX);
-		
+
 		return out;
 	}
-	
+
 	public function abs() : Void
 	{
 		col1.abs();

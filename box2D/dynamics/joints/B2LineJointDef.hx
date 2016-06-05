@@ -18,7 +18,7 @@
 
 package box2D.dynamics.joints;
 
-	
+
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2Body;
 
@@ -36,11 +36,11 @@ class B2LineJointDef extends B2JointDef
 {
 	public function b2LineJointDef()
 	{
-		
+
 		localAnchorA = new B2Vec2();
 		localAnchorB = new B2Vec2();
 		localAxisA = new B2Vec2();
-		
+
 		type = B2JointType.LINE_JOINT;
 		//localAnchor1.SetZero();
 		//localAnchor2.SetZero();
@@ -52,7 +52,7 @@ class B2LineJointDef extends B2JointDef
 		maxMotorForce = 0.0;
 		motorSpeed = 0.0;
 	}
-	
+
 	public function initialize(bA:B2Body, bB:B2Body, anchor:B2Vec2, axis:B2Vec2) : Void
 	{
 		bodyA = bA;
@@ -61,7 +61,7 @@ class B2LineJointDef extends B2JointDef
 		localAnchorB = bodyB.getLocalPoint(anchor);
 		localAxisA = bodyA.getLocalVector(axis);
 	}
-	
+
 	/**
 	* The local anchor point relative to bodyA's origin.
 	*/
@@ -107,5 +107,5 @@ class B2LineJointDef extends B2JointDef
 	*/
 	public var motorSpeed:Float;
 
-	
+
 }

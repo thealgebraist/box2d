@@ -31,7 +31,7 @@ import box2D.dynamics.B2TimeStep;
  * The damping is calculated by multiplying velocity by a matrix in local co-ordinates.
  */
 class B2TensorDampingController extends B2Controller
-{	
+{
 	/**
 	 * Tensor to use in damping model
 	 */
@@ -42,22 +42,22 @@ class B2TensorDampingController extends B2Controller
 	(-a 0;0 -b)		Differing x and y damping. Useful e.g. for top-down wheels.
 	*/
 	//By the way, tensor in this case just means matrix, don't let the terminology get you down.
-	
+
 	/**
 	 * Set this to a positive number to clamp the maximum amount of damping done.
 	 */
 	public var maxTimestep:Float;
 	// Typically one wants maxTimestep to be 1/(max eigenvalue of T), so that damping will never cause something to reverse direction
-	
-	
+
+
 	public function new () {
-		
+
 		T = new B2Mat22();
 		maxTimestep = 0;
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Helper function to set T in a common case
 	 */
@@ -72,7 +72,7 @@ class B2TensorDampingController extends B2Controller
 			maxTimestep = 0;
 		}
 	}
-	
+
 	public override function step(step:B2TimeStep):Void{
 		var timestep:Float = step.dt;
 		if(timestep<=B2Math.MIN_VALUE)

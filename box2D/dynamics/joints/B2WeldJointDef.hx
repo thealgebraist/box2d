@@ -18,7 +18,7 @@
 
 package box2D.dynamics.joints;
 
-	
+
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2Body;
 
@@ -36,11 +36,11 @@ class B2WeldJointDef extends B2JointDef
 		super ();
 		localAnchorA = new B2Vec2();
 		localAnchorB = new B2Vec2();
-		
+
 		type = B2JointType.WELD_JOINT;
 		referenceAngle = 0.0;
 	}
-	
+
 	/**
 	 * Initialize the bodies, anchors, axis, and reference angle using the world
 	 * anchor and world axis.

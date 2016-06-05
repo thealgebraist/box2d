@@ -28,19 +28,19 @@ import box2D.dynamics.B2TimeStep;
  * Applies an acceleration every frame, like gravity
  */
 class B2ConstantAccelController extends B2Controller
-{	
+{
 	/**
 	 * The acceleration to apply
 	 */
 	public var A:B2Vec2;
-	
-	
+
+
 	public function new () {
-		
+
 		A = new B2Vec2(0, 0);
-		
+
 	}
-	
+
 	public override function step(step:B2TimeStep):Void{
 		var smallA:B2Vec2 = new B2Vec2(A.x * step.dt, A.y * step.dt);
 		var i:B2ControllerEdge=m_bodyList;

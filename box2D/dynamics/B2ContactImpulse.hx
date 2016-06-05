@@ -25,17 +25,17 @@ import box2D.common.B2Settings;
  * sub-step forces may approach infinity for rigid body collisions. These
  * match up one-to-one with the contact points in b2Manifold.
  */
-class B2ContactImpulse 
+class B2ContactImpulse
 {
-	
+
 	public function new () {
-		
+
 		normalImpulses = new Array <Float> ();
 		tangentImpulses = new Array <Float> ();
-		
+
 	}
-	
+
 	public var normalImpulses:Array <Float>;
 	public var tangentImpulses:Array <Float>;
-	
+
 }

@@ -17,10 +17,10 @@
 */
 
 
-	
-	
+
+
 import box2D.common.math.B2Vec2;
-	
+
 	import box2D.dynamics.*;
 	import box2D.collision.*;
 	import box2D.collision.shapes.*;
@@ -28,17 +28,17 @@ import box2D.common.math.B2Vec2;
 	import box2D.dynamics.contacts.*;
 	import box2D.common.*;
 	import box2D.common.math.*;
-	
+
 	//TODO_BORIS: Remove
 //	use namespace B2internal;
-	
+
 	 class TestStack extends Test{
-		 
+
 		public function new(){
 			super();
 			// Set Text field
 // 			Main.m_aboutText.text = "Stacked Boxes";
-			
+
 			// Add bodies
 			var fd:B2FixtureDef = new B2FixtureDef();
 			var sd:B2PolygonShape = new B2PolygonShape();
@@ -88,7 +88,7 @@ import box2D.common.math.B2Vec2;
 			bd.position.set(0, 360 / m_physScale);
 			b = m_world.createBody(bd);
 			b.createFixture(fd);
-			
+
 			// Create ball
 			var cd:B2CircleShape = new B2CircleShape();
 			cd.m_radius = 40/m_physScale;
@@ -101,12 +101,12 @@ import box2D.common.math.B2Vec2;
 			bd.position.set(50/m_physScale, 100 / m_physScale);
 			b = m_world.createBody(bd);
 			b.createFixture(fd);
-			
+
 		}
-		
-		
+
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
 	}
-	
+

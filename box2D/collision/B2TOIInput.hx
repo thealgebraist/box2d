@@ -19,26 +19,26 @@
 package box2D.collision;
 
 import box2D.common.math.B2Sweep;
-	
+
 /**
  * Inpute parameters for b2TimeOfImpact
  */
-class B2TOIInput 
+class B2TOIInput
 {
-	
+
 	public function new () {
-		
+
 		proxyA = new B2DistanceProxy();
 		proxyB = new B2DistanceProxy();
 		sweepA = new B2Sweep();
 		sweepB = new B2Sweep();
-		
+
 	}
-	
+
 	public var proxyA:B2DistanceProxy;
 	public var proxyB:B2DistanceProxy;
 	public var sweepA:B2Sweep;
 	public var sweepB:B2Sweep;
 	public var tolerance:Float;
-	
+
 }

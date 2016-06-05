@@ -38,13 +38,13 @@ class B2PositionSolverManifold
 			m_points[i] = new B2Vec2();
 		}
 	}
-	
+
 	private static var circlePointA:B2Vec2 = new B2Vec2();
 	private static var circlePointB:B2Vec2 = new B2Vec2();
 	public function initialize(cc:B2ContactConstraint):Void
 	{
 		B2Settings.b2Assert(cc.pointCount > 0);
-		
+
 		var i:Int;
 		var clipPointX:Float;
 		var clipPointY:Float;
@@ -52,7 +52,7 @@ class B2PositionSolverManifold
 		var tVec:B2Vec2;
 		var planePointX:Float;
 		var planePointY:Float;
-		
+
 		switch(cc.type)
 		{
 			case CIRCLES:
@@ -85,7 +85,7 @@ class B2PositionSolverManifold
 				m_points[0].y = 0.5 * (pointAY + pointBY);
 				m_separations[0] = dX * m_normal.x + dY * m_normal.y - cc.radius;
 			}
-			
+
 			case FACE_A:
 			{
 				//m_normal = cc.bodyA.GetWorldVector(cc.localPlaneNormal);
@@ -98,7 +98,7 @@ class B2PositionSolverManifold
 				tVec = cc.localPoint;
 				planePointX = cc.bodyA.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y);
 				planePointY = cc.bodyA.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y);
-				
+
 				tMat = cc.bodyB.m_xf.R;
 				for (i in 0...cc.pointCount)
 				{
@@ -111,7 +111,7 @@ class B2PositionSolverManifold
 					m_points[i].y = clipPointY;
 				}
 			}
-			
+
 			case FACE_B:
 			{
 				//m_normal = cc.bodyB.GetWorldVector(cc.localPlaneNormal);
@@ -124,7 +124,7 @@ class B2PositionSolverManifold
 				tVec = cc.localPoint;
 				planePointX = cc.bodyB.m_xf.position.x + (tMat.col1.x * tVec.x + tMat.col2.x * tVec.y);
 				planePointY = cc.bodyB.m_xf.position.y + (tMat.col1.y * tVec.x + tMat.col2.y * tVec.y);
-				
+
 				tMat = cc.bodyA.m_xf.R;
 				for (i in 0...cc.pointCount)
 				{
@@ -135,15 +135,15 @@ class B2PositionSolverManifold
 					m_separations[i] = (clipPointX - planePointX) * m_normal.x + (clipPointY - planePointY) * m_normal.y - cc.radius;
 					m_points[i].set(clipPointX, clipPointY);
 				}
-				
+
 				// Ensure normal points from A to B
 				m_normal.x *= -1;
 				m_normal.y *= -1;
 			}
-			
+
 		}
 	}
-	
+
 	public var m_normal:B2Vec2;
 	public var m_points:Array <B2Vec2>;
 	public var m_separations:Array <Float>;

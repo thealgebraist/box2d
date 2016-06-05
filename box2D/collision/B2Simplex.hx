@@ -27,28 +27,28 @@ import box2D.common.math.B2Vec2;
 
 class B2Simplex
 {
-	
+
 public function new ()
 {
 	m_v1 = new B2SimplexVertex();
 	m_v2 = new B2SimplexVertex();
 	m_v3 = new B2SimplexVertex();
 	m_vertices = new Array <B2SimplexVertex> ();
-	
+
 	m_vertices[0] = m_v1;
 	m_vertices[1] = m_v2;
 	m_vertices[2] = m_v3;
 }
 
-public function readCache(cache:B2SimplexCache, 
+public function readCache(cache:B2SimplexCache,
 			proxyA:B2DistanceProxy, transformA:B2Transform,
 			proxyB:B2DistanceProxy, transformB:B2Transform):Void
 {
 	B2Settings.b2Assert(0 <= cache.count && cache.count <= 3);
-	
+
 	var wALocal:B2Vec2;
 	var wBLocal:B2Vec2;
-	
+
 	// Copy data from cache.
 	m_count = cache.count;
 	var vertices:Array <B2SimplexVertex> = m_vertices;
@@ -65,7 +65,7 @@ public function readCache(cache:B2SimplexCache,
 		v.w = B2Math.subtractVV(v.wB, v.wA);
 		v.a = 0;
 	}
-	
+
 	// Compute the new simplex metric, if it substantially different than
 	// old metric then flush the simplex
 	if (m_count > 1)
@@ -78,7 +78,7 @@ public function readCache(cache:B2SimplexCache,
 			m_count = 0;
 		}
 	}
-	
+
 	// If the cache is empty or invalid
 	if (m_count == 0)
 	{
@@ -112,7 +112,7 @@ public function getSearchDirection():B2Vec2
 	{
 		case 1:
 			return m_v1.w.getNegative();
-			
+
 		case 2:
 		{
 			var e12:B2Vec2 = B2Math.subtractVV(m_v2.w, m_v1.w);
@@ -157,24 +157,24 @@ public function getWitnessPoints(pA:B2Vec2, pB:B2Vec2):Void
 	{
 		case 0:
 			B2Settings.b2Assert(false);
-			
+
 		case 1:
 			pA.setV(m_v1.wA);
 			pB.setV(m_v1.wB);
-			
+
 		case 2:
 			pA.x = m_v1.a * m_v1.wA.x + m_v2.a * m_v2.wA.x;
 			pA.y = m_v1.a * m_v1.wA.y + m_v2.a * m_v2.wA.y;
 			pB.x = m_v1.a * m_v1.wB.x + m_v2.a * m_v2.wB.x;
 			pB.y = m_v1.a * m_v1.wB.y + m_v2.a * m_v2.wB.y;
-			
+
 		case 3:
 			pB.x = pA.x = m_v1.a * m_v1.wA.x + m_v2.a * m_v2.wA.x + m_v3.a * m_v3.wA.x;
 			pB.y = pA.y = m_v1.a * m_v1.wA.y + m_v2.a * m_v2.wA.y + m_v3.a * m_v3.wA.y;
-			
+
 		default:
 			B2Settings.b2Assert(false);
-			
+
 	}
 }
 
@@ -229,7 +229,7 @@ public function solve2():Void
 	var w1:B2Vec2 = m_v1.w;
 	var w2:B2Vec2 = m_v2.w;
 	var e12:B2Vec2 = B2Math.subtractVV(w2, w1);
-	
+
 	// w1 region
 	var d12_2:Float = -(w1.x * e12.x + w1.y * e12.y);
 	if (d12_2 <= 0.0)
@@ -239,7 +239,7 @@ public function solve2():Void
 		m_count = 1;
 		return;
 	}
-	
+
 	// w2 region
 	var d12_1:Float = (w2.x * e12.x + w2.y * e12.y);
 	if (d12_1 <= 0.0)
@@ -250,7 +250,7 @@ public function solve2():Void
 		m_v1.set(m_v2);
 		return;
 	}
-	
+
 	// Must be in e12 region.
 	var inv_d12:Float = 1.0 / (d12_1 + d12_2);
 	m_v1.a = d12_1 * inv_d12;
@@ -263,7 +263,7 @@ public function solve3():Void
 	var w1:B2Vec2 = m_v1.w;
 	var w2:B2Vec2 = m_v2.w;
 	var w3:B2Vec2 = m_v3.w;
-	
+
 	// Edge12
 	// [1      1     ][a1] = [1]
 	// [w1.e12 w2.e12][a2] = [0]
@@ -293,7 +293,7 @@ public function solve3():Void
 	var w3e23:Float = B2Math.dot(w3, e23);
 	var d23_1:Float = w3e23;
 	var d23_2:Float = -w2e23;
-	
+
 	// Triangle123
 	var n123:Float = B2Math.crossVV(e12, e13);
 

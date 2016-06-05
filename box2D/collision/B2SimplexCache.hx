@@ -17,26 +17,26 @@
 */
 
 package box2D.collision;
-	
+
 	/**
 	 * Used to warm start b2Distance.
 	 * Set count to zero on first call.
 	 */
-class B2SimplexCache 
+class B2SimplexCache
 {
-	
+
 	public function new () {
-		
+
 		indexA = new Array <Int> ();
 		indexB = new Array <Int> ();
-		
+
 	}
-	
-	/** Length or area */	
-	public var metric:Float = 0;		
+
+	/** Length or area */
+	public var metric:Float = 0;
 	public var count:Int = 0;
-	/** Vertices on shape a */	
-	public var indexA:Array <Int>;	
-	/** Vertices on shape b */	
-	public var indexB:Array <Int>;	
+	/** Vertices on shape a */
+	public var indexA:Array <Int>;
+	/** Vertices on shape b */
+	public var indexB:Array <Int>;
 }

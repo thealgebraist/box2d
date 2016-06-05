@@ -17,9 +17,9 @@
 */
 
 package box2D.collision;
-	
 
-// 
+
+//
 /**
 * We use contact ids to facilitate warm starting.
 */
@@ -37,9 +37,9 @@ class B2ContactID
 		id.key = key;
 		return id;
 	}
-	
+
 	public var key (get, set):Int;
-	
+
 	private function get_key():Int {
 		return _key;
 	}

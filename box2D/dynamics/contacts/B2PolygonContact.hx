@@ -50,8 +50,8 @@ class B2PolygonContact extends B2Contact
 		var bA:B2Body = m_fixtureA.getBody();
 		var bB:B2Body = m_fixtureB.getBody();
 
-		B2Collision.collidePolygons(m_manifold, 
-					cast (m_fixtureA.getShape(), B2PolygonShape), bA.m_xf, 
+		B2Collision.collidePolygons(m_manifold,
+					cast (m_fixtureA.getShape(), B2PolygonShape), bA.m_xf,
 					cast (m_fixtureB.getShape(), B2PolygonShape), bB.m_xf);
 	}
 }

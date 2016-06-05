@@ -23,14 +23,14 @@ package box2D.collision;
 
 import box2D.common.math.B2Vec2;
 
-class B2RayCastInput 
+class B2RayCastInput
 {
 	public function new (p1:B2Vec2 = null, p2:B2Vec2 = null, maxFraction:Float = 1)
 	{
-		
+
 		this.p1 = new B2Vec2();
 		this.p2 = new B2Vec2();
-		
+
 		if (p1 != null)
 			this.p1.setV(p1);
 		if (p2 != null)

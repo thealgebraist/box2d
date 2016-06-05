@@ -17,8 +17,8 @@
 */
 
 package box2D.common.math;
-	
-	
+
+
 /**
 * A 3-by-3 matrix. Stored in column-major order.
 */
@@ -26,11 +26,11 @@ class B2Mat33
 {
 	public function new(c1:B2Vec3=null, c2:B2Vec3=null, c3:B2Vec3=null)
 	{
-		
+
 		col1 = new B2Vec3();
 		col2 = new B2Vec3();
 		col3 = new B2Vec3();
-		
+
 		if (c1 == null && c2 == null && c3 == null)
 		{
 			col1.setZero();
@@ -44,25 +44,25 @@ class B2Mat33
 			col3.setV(c3);
 		}
 	}
-	
+
 	public function setVVV(c1:B2Vec3, c2:B2Vec3, c3:B2Vec3) : Void
 	{
 		col1.setV(c1);
 		col2.setV(c2);
 		col3.setV(c3);
 	}
-	
+
 	public function copy():B2Mat33{
 		return new B2Mat33(col1, col2, col3);
 	}
-	
+
 	public function setM(m:B2Mat33) : Void
 	{
 		col1.setV(m.col1);
 		col2.setV(m.col2);
 		col3.setV(m.col3);
 	}
-	
+
 	public function addM(m:B2Mat33) : Void
 	{
 		col1.x += m.col1.x;
@@ -75,7 +75,7 @@ class B2Mat33
 		col3.y += m.col3.y;
 		col3.z += m.col3.z;
 	}
-	
+
 	public function setIdentity() : Void
 	{
 		col1.x = 1.0; col2.x = 0.0; col3.x = 0.0;
@@ -89,7 +89,7 @@ class B2Mat33
 		col1.y = 0.0; col2.y = 0.0; col3.y = 0.0;
 		col1.z = 0.0; col2.z = 0.0; col3.z = 0.0;
 	}
-	
+
 	// Solve A * x = b
 	public function solve22(out:B2Vec2, bX:Float, bY:Float):B2Vec2
 	{
@@ -106,10 +106,10 @@ class B2Mat33
 		}
 		out.x = det * (a22 * bX - a12 * bY);
 		out.y = det * (a11 * bY - a21 * bX);
-		
+
 		return out;
 	}
-	
+
 	// Solve A * x = b
 	public function solve33(out:B2Vec3, bX:Float, bY:Float, bZ:Float):B2Vec3
 	{

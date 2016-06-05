@@ -17,8 +17,8 @@
 */
 
 
-	
-	
+
+
 	import box2D.dynamics.*;
 	import box2D.collision.*;
 	import box2D.collision.shapes.*;
@@ -26,20 +26,20 @@
 	import box2D.dynamics.contacts.*;
 	import box2D.common.*;
 	import box2D.common.math.*;
-	
-	
-	
+
+
+
 class TestBreakable extends Test{
-		
+
 		public function new(){
 			super();
 			// Set Text field
 // 			Global.caption.text = "Breakable";
-			
+
 			m_world.setContactListener(new ContactListenerBreakable(this));
-			
+
 			var ground:B2Body = m_world.getGroundBody();
-			
+
 			// Breakable Dynamic Body
 			{
 				var bd:B2BodyDef = new B2BodyDef();
@@ -47,31 +47,31 @@ class TestBreakable extends Test{
 				bd.position.set(5.0, 5.0);
 				bd.angle = 0.25 * Math.PI;
 				m_body1 = m_world.createBody(bd);
-				
+
 				m_shape1.setAsOrientedBox(0.5, 0.5, new B2Vec2( -0.5, 0.0));
 				m_piece1 = m_body1.createFixture2(m_shape1, 1.0);
-				
+
 				m_shape2.setAsOrientedBox(0.5, 0.5, new B2Vec2( 0.5, 0.0));
 				m_piece2 = m_body1.createFixture2(m_shape2, 1.0);
 			}
-			
+
 			m_break = false;
 			m_broke = false;
 		}
-		
+
 		public function Break():Void
 		{
 			// Apply cached velocity for more realistic break
 			m_body1.setLinearVelocity(m_velocity);
 			m_body1.setAngularVelocity(m_angularVelocity);
-			
+
 			// Split body into two pieces
 			m_body1.split(function(fixture:B2Fixture):Bool {
 				return fixture != m_piece1;
 			});
 		}
-		
-		override public function Update():Void 
+
+		override public function Update():Void
 		{
 			super.Update();
 			if (m_break)
@@ -80,7 +80,7 @@ class TestBreakable extends Test{
 				m_broke = true;
 				m_break = false;
 			}
-			
+
 			// Cache velocities to improve movement on breakage
 			if (m_broke == false)
 			{
@@ -88,11 +88,11 @@ class TestBreakable extends Test{
 				m_angularVelocity = m_body1.getAngularVelocity();
 			}
 		}
-		
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
-		
+
 		public var m_body1:B2Body;
 		public var m_velocity:B2Vec2 = new B2Vec2();
 		public var m_angularVelocity:Float;

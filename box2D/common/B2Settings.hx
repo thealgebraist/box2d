@@ -17,18 +17,18 @@
 */
 
 package box2D.common;
-	
-	
+
+
 /**
 * This class controls Box2D global settings
 */
 class B2Settings{
-    
+
     /**
     * The current version of Box2D
     */
     static public var VERSION:String = "2.1alpha";
-	
+
 	#if !cpp
 	static public var USHRT_MAX:Int = 0x0000ffff;
 	#end
@@ -49,14 +49,14 @@ class B2Settings{
      */
 	//static public const b2_maxProxies:Int = 0;
 	//static public const b2_maxPairs:Int = 8 * b2_maxProxies;
-	
+
 	/**
 	 * This is used to fatten AABBs in the dynamic tree. This allows proxies
 	 * to move by a small amount without triggering a tree adjustment.
 	 * This is in meters.
 	 */
 	static public var b2_aabbExtension:Float = 0.1;
-	
+
  	/**
  	 * This is used to fatten AABBs in the dynamic tree. This is used to predict
  	 * the future position based on the current displacement.
@@ -70,21 +70,21 @@ class B2Settings{
 	 * Making it larger may create artifacts for vertex collision.
 	 */
 	static public var b2_polygonRadius:Float = 2.0 * /*b2_linearSlop*/ 0.005;
-	
+
 	// Dynamics
-	
+
 	/**
 	* A small length used as a collision and constraint tolerance. Usually it is
 	* chosen to be numerically significant, but visually insignificant.
 	*/
 	static public var b2_linearSlop:Float = 0.005;	// 0.5 cm
-	
+
 	/**
 	* A small angle used as a collision and constraint tolerance. Usually it is
 	* chosen to be numerically significant, but visually insignificant.
 	*/
 	static public var b2_angularSlop:Float = 2.0 / 180.0 * /*b2_pi*/ Math.PI;			// 2 degrees
-	
+
 	/**
 	* Continuous collision detection (CCD) works with core, shrunken shapes. This is the
 	* amount by which shapes are automatically shrunk to work with CCD. This must be
@@ -92,56 +92,56 @@ class B2Settings{
     * @see b2_linearSlop
 	*/
 	static public var b2_toiSlop:Float = 8.0 * /*b2_linearSlop*/ 0.005;
-	
+
 	/**
 	* Maximum number of contacts to be handled to solve a TOI island.
 	*/
 	static public var b2_maxTOIContactsPerIsland:Int = 32;
-	
+
 	/**
 	* Maximum number of joints to be handled to solve a TOI island.
 	*/
 	static public var b2_maxTOIJointsPerIsland:Int = 32;
-	
+
 	/**
 	* A velocity threshold for elastic collisions. Any collision with a relative linear
 	* velocity below this threshold will be treated as inelastic.
 	*/
 	static public var b2_velocityThreshold:Float = 1.0;		// 1 m/s
-	
+
 	/**
 	* The maximum linear position correction used when solving constraints. This helps to
 	* prevent overshoot.
 	*/
 	static public var b2_maxLinearCorrection:Float = 0.2;	// 20 cm
-	
+
 	/**
 	* The maximum angular position correction used when solving constraints. This helps to
 	* prevent overshoot.
 	*/
 	static public var b2_maxAngularCorrection:Float = 8.0 / 180.0 * /*b2_pi*/ Math.PI;			// 8 degrees
-	
+
 	/**
 	* The maximum linear velocity of a body. This limit is very large and is used
 	* to prevent numerical problems. You shouldn't need to adjust this.
 	*/
 	static public var b2_maxTranslation:Float = 2.0;
 	static public var b2_maxTranslationSquared:Float = /*b2_maxTranslation * b2_maxTranslation*/ 4.0;
-	
+
 	/**
 	* The maximum angular velocity of a body. This limit is very large and is used
 	* to prevent numerical problems. You shouldn't need to adjust this.
 	*/
 	static public var b2_maxRotation:Float = 0.5 * /*b2_pi*/ Math.PI;
 	static public var b2_maxRotationSquared:Float = /*b2_maxRotation * b2_maxRotation*/ (0.5 * Math.PI) * (0.5 * Math.PI);
-	
+
 	/**
 	* This scale factor controls how fast overlap is resolved. Ideally this would be 1 so
 	* that overlap is removed in one time step. However using values close to 1 often lead
 	* to overshoot.
 	*/
 	static public var b2_contactBaumgarte:Float = 0.2;
-	
+
 	/**
 	 * Friction mixing law. Feel free to customize this.
 	 */
@@ -150,7 +150,7 @@ class B2Settings{
 		return Math.sqrt(friction1 * friction2);
 	}
 
-	/** 
+	/**
 	 * Restitution mixing law. Feel free to customize this.
 	 */
 	public static function b2MixRestitution(restitution1:Float, restitution2:Float):Float
@@ -161,7 +161,7 @@ class B2Settings{
 
 
 	// Sleep
-	
+
 	/**
 	* The time that a body must be still before it will go to sleep.
 	*/
@@ -174,7 +174,7 @@ class B2Settings{
 	* A body cannot sleep if its angular velocity is above this tolerance.
 	*/
 	static public var b2_angularSleepTolerance:Float = 2.0 / 180.0 * /*B2Settings.b2_pi*/ Math.PI;	// 2 degrees/s
-	
+
 	// assert
     /**
     * b2Assert is used internally to handle assertions. By default, calls are commented out to save performance,

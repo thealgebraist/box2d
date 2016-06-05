@@ -28,11 +28,11 @@ import box2D.common.math.B2Vec2;
 class B2MassData
 {
 	public function new () {
-		
+
 		mass = 0.0;
 		center = new B2Vec2(0,0);
 		I = 0.0;
-		
+
 	}
 	/**
 	* The mass of the shape, usually in kilograms.

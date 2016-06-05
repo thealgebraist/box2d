@@ -23,18 +23,18 @@
 	import box2D.dynamics.contacts.*;
 	import box2D.common.*;
 	import box2D.common.math.*;
-	
+
 import flash.display.Sprite;
-	
-	
+
+
 	class TestRagdoll extends Test{
-		
-		
+
+
 		public function new(){
 			super();
 			// Set Text field
 			//Main.m_aboutText.text = "Ragdolls";
-			var circ:B2CircleShape; 
+			var circ:B2CircleShape;
 			var box:B2PolygonShape;
 			var bd:B2BodyDef = new B2BodyDef();
 			var jd:B2RevoluteJointDef = new B2RevoluteJointDef();
@@ -44,14 +44,14 @@ import flash.display.Sprite;
 			//for (var i:int = 0; i < 2; i++)
 			for(i in 0...2)
 			{
-				
+
 				var startX:Float = 70 + Math.random() * 20 + 480 * i;
 				var startY:Float = 20 + Math.random() * 50;
-				
+
 				// BODIES
 				// Set these to dynamic bodies
 				bd.type = 2;
-				
+
 				// Head
 				circ = new B2CircleShape( 12.5 / m_physScale );
 				fixtureDef.shape = circ;
@@ -64,7 +64,7 @@ import flash.display.Sprite;
 				//if (i == 0){
 					head.applyImpulse(new B2Vec2(Math.random() * 100 - 50, Math.random() * 100 - 50), head.getWorldCenter());
 				//}
-				
+
 				// Torso1
 				box = new B2PolygonShape();
 				box.setAsBox(15 / m_physScale, 10 / m_physScale);
@@ -88,7 +88,7 @@ import flash.display.Sprite;
 				bd.position.set(startX / m_physScale, (startY + 58) / m_physScale);
 				var torso3:B2Body = m_world.createBody(bd);
 				torso3.createFixture(fixtureDef);
-				
+
 				// UpperArm
 				fixtureDef.density = 1.0;
 				fixtureDef.friction = 0.4;
@@ -107,7 +107,7 @@ import flash.display.Sprite;
 				bd.position.set((startX + 30) / m_physScale, (startY + 20) / m_physScale);
 				var upperArmR:B2Body = m_world.createBody(bd);
 				upperArmR.createFixture(fixtureDef);
-				
+
 				// LowerArm
 				fixtureDef.density = 1.0;
 				fixtureDef.friction = 0.4;
@@ -126,7 +126,7 @@ import flash.display.Sprite;
 				bd.position.set((startX + 57) / m_physScale, (startY + 20) / m_physScale);
 				var lowerArmR:B2Body = m_world.createBody(bd);
 				lowerArmR.createFixture(fixtureDef);
-				
+
 				// UpperLeg
 				fixtureDef.density = 1.0;
 				fixtureDef.friction = 0.4;
@@ -145,7 +145,7 @@ import flash.display.Sprite;
 				bd.position.set((startX + 8) / m_physScale, (startY + 85) / m_physScale);
 				var upperLegR:B2Body = m_world.createBody(bd);
 				upperLegR.createFixture(fixtureDef);
-				
+
 				// LowerLeg
 				fixtureDef.density = 1.0;
 				fixtureDef.friction = 0.4;
@@ -164,17 +164,17 @@ import flash.display.Sprite;
 				bd.position.set((startX + 8) / m_physScale, (startY + 120) / m_physScale);
 				var lowerLegR:B2Body = m_world.createBody(bd);
 				lowerLegR.createFixture(fixtureDef);
-				
-				
+
+
 				// JOINTS
 				jd.enableLimit = true;
-				
+
 				// Head to shoulders
 				jd.lowerAngle = -40 / (180/Math.PI);
 				jd.upperAngle = 40 / (180/Math.PI);
 				jd.initialize(torso1, head, new B2Vec2(startX / m_physScale, (startY + 15) / m_physScale));
 				m_world.createJoint(jd);
-				
+
 				// Upper arm to shoulders
 				// L
 				jd.lowerAngle = -85 / (180/Math.PI);
@@ -186,7 +186,7 @@ import flash.display.Sprite;
 				jd.upperAngle = 85 / (180/Math.PI);
 				jd.initialize(torso1, upperArmR, new B2Vec2((startX + 18) / m_physScale, (startY + 20) / m_physScale));
 				m_world.createJoint(jd);
-				
+
 				// Lower arm to upper arm
 				// L
 				jd.lowerAngle = -130 / (180/Math.PI);
@@ -198,7 +198,7 @@ import flash.display.Sprite;
 				jd.upperAngle = 130 / (180/Math.PI);
 				jd.initialize(upperArmR, lowerArmR, new B2Vec2((startX + 45) / m_physScale, (startY + 20) / m_physScale));
 				m_world.createJoint(jd);
-				
+
 				// Shoulders/stomach
 				jd.lowerAngle = -15 / (180/Math.PI);
 				jd.upperAngle = 15 / (180/Math.PI);
@@ -207,7 +207,7 @@ import flash.display.Sprite;
 				// Stomach/hips
 				jd.initialize(torso2, torso3, new B2Vec2(startX / m_physScale, (startY + 50) / m_physScale));
 				m_world.createJoint(jd);
-				
+
 				// Torso to upper leg
 				// L
 				jd.lowerAngle = -25 / (180/Math.PI);
@@ -219,7 +219,7 @@ import flash.display.Sprite;
 				jd.upperAngle = 25 / (180/Math.PI);
 				jd.initialize(torso3, upperLegR, new B2Vec2((startX + 8) / m_physScale, (startY + 72) / m_physScale));
 				m_world.createJoint(jd);
-				
+
 				// Upper leg to lower leg
 				// L
 				jd.lowerAngle = -25 / (180/Math.PI);
@@ -231,16 +231,16 @@ import flash.display.Sprite;
 				jd.upperAngle = 25 / (180/Math.PI);
 				jd.initialize(upperLegR, lowerLegR, new B2Vec2((startX + 8) / m_physScale, (startY + 105) / m_physScale));
 				m_world.createJoint(jd);
-				
+
 			}
-			
-			
+
+
 			// Add stairs on the left, these are static bodies so set the type accordingly
 			bd.type = 0;
 			fixtureDef.density = 0.0;
 			fixtureDef.friction = 0.4;
 			fixtureDef.restitution = 0.3;
-			//for (var j:int = 1; j <= 10; j++) 
+			//for (var j:int = 1; j <= 10; j++)
 			for (j in 1...11)
 			{
 				box = new B2PolygonShape();
@@ -250,7 +250,7 @@ import flash.display.Sprite;
 				var head = m_world.createBody(bd);
 				head.createFixture(fixtureDef);
 			}
-			
+
 			// Add stairs on the right
 			//for (var k:int = 1; k <= 10; k++)
 			for(k in 1...11)
@@ -262,19 +262,19 @@ import flash.display.Sprite;
 				var head = m_world.createBody(bd);
 				head.createFixture(fixtureDef);
 			}
-			
+
 			box = new B2PolygonShape();
 			box.setAsBox(30 / m_physScale, 40 / m_physScale);
 			fixtureDef.shape = box;
 			bd.position.set(320 / m_physScale, 320 / m_physScale);
 			var head = m_world.createBody(bd);
 			head.createFixture(fixtureDef);
-			
-			
+
+
 		}
-		
-		
+
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
 	}

@@ -27,14 +27,14 @@ import box2D.common.math.B2Vec2;
 */
 class B2Jacobian
 {
-	
+
 	public function new () {
-		
+
 		linearA = new B2Vec2();
 		linearB = new B2Vec2();
-		
+
 	}
-	
+
 	public var linearA:B2Vec2;
 	public var angularA:Float;
 	public var linearB:B2Vec2;
@@ -49,7 +49,7 @@ class B2Jacobian
 		linearB.setV(x2); angularB = a2;
 	}
 	public function compute(x1:B2Vec2, a1:Float, x2:B2Vec2, a2:Float):Float{
-		
+
 		//return b2Math.b2Dot(linearA, x1) + angularA * a1 + b2Math.b2Dot(linearV, x2) + angularV * a2;
 		return (linearA.x*x1.x + linearA.y*x1.y) + angularA * a1 + (linearB.x*x2.x + linearB.y*x2.y) + angularB * a2;
 	}

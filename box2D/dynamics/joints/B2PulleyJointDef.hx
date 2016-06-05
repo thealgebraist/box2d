@@ -17,8 +17,8 @@
 */
 
 package box2D.dynamics.joints;
-	
-	
+
+
 import box2D.common.math.B2Vec2;
 import box2D.dynamics.B2Body;
 
@@ -40,7 +40,7 @@ class B2PulleyJointDef extends B2JointDef
 		groundAnchorB = new B2Vec2();
 		localAnchorA = new B2Vec2();
 		localAnchorB = new B2Vec2();
-		
+
 		type = B2JointType.PULLEY_JOINT;
 		groundAnchorA.set(-1.0, 1.0);
 		groundAnchorB.set(1.0, 1.0);
@@ -53,7 +53,7 @@ class B2PulleyJointDef extends B2JointDef
 		ratio = 1.0;
 		collideConnected = true;
 	}
-	
+
 	public function initialize(bA:B2Body, bB:B2Body,
 				gaA:B2Vec2, gaB:B2Vec2,
 				anchorA:B2Vec2, anchorB:B2Vec2,
@@ -70,13 +70,13 @@ class B2PulleyJointDef extends B2JointDef
 		var d1Y:Float = anchorA.y - gaA.y;
 		//length1 = d1.Length();
 		lengthA = Math.sqrt(d1X*d1X + d1Y*d1Y);
-		
+
 		//b2Vec2 d2 = anchor2 - ga2;
 		var d2X:Float = anchorB.x - gaB.x;
 		var d2Y:Float = anchorB.y - gaB.y;
 		//length2 = d2.Length();
 		lengthB = Math.sqrt(d2X*d2X + d2Y*d2Y);
-		
+
 		ratio = r;
 		//b2Settings.b2Assert(ratio > Number.MIN_VALUE);
 		var C:Float = lengthA + ratio * lengthB;
@@ -88,45 +88,45 @@ class B2PulleyJointDef extends B2JointDef
 	* The first ground anchor in world coordinates. This point never moves.
 	*/
 	public var groundAnchorA:B2Vec2;
-	
+
 	/**
 	* The second ground anchor in world coordinates. This point never moves.
 	*/
 	public var groundAnchorB:B2Vec2;
-	
+
 	/**
 	* The local anchor point relative to bodyA's origin.
 	*/
 	public var localAnchorA:B2Vec2;
-	
+
 	/**
 	* The local anchor point relative to bodyB's origin.
 	*/
 	public var localAnchorB:B2Vec2;
-	
+
 	/**
 	* The a reference length for the segment attached to bodyA.
 	*/
 	public var lengthA:Float;
-	
+
 	/**
 	* The maximum length of the segment attached to bodyA.
 	*/
 	public var maxLengthA:Float;
-	
+
 	/**
 	* The a reference length for the segment attached to bodyB.
 	*/
 	public var lengthB:Float;
-	
+
 	/**
 	* The maximum length of the segment attached to bodyB.
 	*/
 	public var maxLengthB:Float;
-	
+
 	/**
 	* The pulley ratio, used to simulate a block-and-tackle.
 	*/
 	public var ratio:Float;
-	
+
 }

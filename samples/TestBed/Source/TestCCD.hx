@@ -17,8 +17,8 @@
 */
 
 
-	
-	
+
+
 	import box2D.dynamics.*;
 	import box2D.collision.*;
 	import box2D.collision.shapes.*;
@@ -26,23 +26,23 @@
 	import box2D.dynamics.contacts.*;
 	import box2D.common.*;
 	import box2D.common.math.*;
-	
-	
-	
+
+
+
 	class TestCCD extends Test{
-		
+
 		public function new(){
 			super();
 			// Set Text field
 // 			Main.m_aboutText.text = "Continuous Collision Detection";
-			
+
 			var bd:B2BodyDef;
 			var body:B2Body;
 			var fixtureDef:B2FixtureDef = new B2FixtureDef();
 			// These values are used for all the parts of the 'basket'
-			fixtureDef.density = 4.0; 
+			fixtureDef.density = 4.0;
 			fixtureDef.restitution = 1.4;
-			
+
 			// Create 'basket'
 			{
 				bd = new B2BodyDef();
@@ -54,18 +54,18 @@
 				sd_bottom.setAsBox( 45.0 / m_physScale, 4.5 / m_physScale );
 				fixtureDef.shape = sd_bottom;
 				body.createFixture( fixtureDef );
-				
+
 				var sd_left:B2PolygonShape = new B2PolygonShape();
 				sd_left.setAsOrientedBox(4.5/m_physScale, 81.0/m_physScale, new B2Vec2(-43.5/m_physScale, -70.5/m_physScale), -0.2);
 				fixtureDef.shape = sd_left;
 				body.createFixture( fixtureDef );
-				
+
 				var sd_right:B2PolygonShape = new B2PolygonShape();
 				sd_right.setAsOrientedBox(4.5/m_physScale, 81.0/m_physScale, new B2Vec2(43.5/m_physScale, -70.5/m_physScale), 0.2);
 				fixtureDef.shape = sd_right;
 				body.createFixture( fixtureDef );
 			}
-			
+
 			// add some small circles for effect
 // 			for (var i:int = 0; i < 5; i++)
 			for(i in 0...5)
@@ -82,13 +82,12 @@
 				body = m_world.createBody(bd);
 				body.createFixture(fixtureDef);
 			}
-			
+
 		}
-		
-		
+
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
-		
+
 	}
-	

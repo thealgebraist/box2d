@@ -23,15 +23,15 @@ package box2D.collision;
 
 import box2D.common.math.B2Vec2;
 
-class B2RayCastOutput 
+class B2RayCastOutput
 {
-	
+
 	public function new () {
-		
+
 		normal = new B2Vec2();
-		
+
 	}
-	
+
 	/**
 	 * The normal at the point of collision
 	 */

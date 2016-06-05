@@ -17,8 +17,8 @@
 */
 
 package box2D.common.math;
-	
-	
+
+
 /**
 * This describes the motion of a body/shape for TOI computation.
 * Shapes are defined with respect to the body origin, which may
@@ -27,15 +27,15 @@ package box2D.common.math;
 */
 class B2Sweep
 {
-	
+
 	public function new () {
-		
+
 		localCenter = new B2Vec2();
 		c0 = new B2Vec2 ();
 		c = new B2Vec2();
-		
+
 	}
-	
+
 	public function set(other:B2Sweep):Void
 	{
 		localCenter.setV(other.localCenter);
@@ -45,7 +45,7 @@ class B2Sweep
 		a = other.a;
 		t0 = other.t0;
 	}
-	
+
 	public function copy():B2Sweep
 	{
 		var copy:B2Sweep = new B2Sweep();
@@ -57,7 +57,7 @@ class B2Sweep
 		copy.t0 = t0;
 		return copy;
 	}
-	
+
 	/**
 	* Get the interpolated transform at a specific time.
 	* @param alpha is a factor in [0,1], where 0 indicates t0.
@@ -68,14 +68,14 @@ class B2Sweep
 		xf.position.y = (1.0 - alpha) * c0.y + alpha * c.y;
 		var angle:Float = (1.0 - alpha) * a0 + alpha * a;
 		xf.R.set(angle);
-		
+
 		// Shift to origin
 		//xf->position -= b2Mul(xf->R, localCenter);
 		var tMat:B2Mat22 = xf.R;
 		xf.position.x -= (tMat.col1.x * localCenter.x + tMat.col2.x * localCenter.y);
 		xf.position.y -= (tMat.col1.y * localCenter.x + tMat.col2.y * localCenter.y);
 	}
-	
+
 	/**
 	* Advance the sweep forward, yielding a new initial state.
 	* @param t the new initial time.

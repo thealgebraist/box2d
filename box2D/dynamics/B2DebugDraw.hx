@@ -35,15 +35,15 @@ class B2DebugDraw
 {
 
 	public function new () {
-		
+
 		m_drawScale = 1.0;
-		
+
 		m_lineThickness = 1.0;
 		m_alpha = 1.0;
 		m_fillAlpha = 1.0;
 		m_xformScale = 1.0;
-		
-		
+
+
 		m_drawFlags = 0;
 	}
 
@@ -78,7 +78,7 @@ class B2DebugDraw
 	public function getFlags() : Int{
 		return m_drawFlags;
 	}
-	
+
 	/**
 	* Append flags to the current flags.
 	*/
@@ -98,14 +98,14 @@ class B2DebugDraw
 	* Set the sprite
 	*/
 	public function setSprite(sprite:Sprite) : Void {
-		m_sprite = sprite; 
+		m_sprite = sprite;
 	}
 	#elseif js
 	public function setSprite(sprite:Dynamic) : Void {
 		m_sprite = sprite;
 	}
 	#end
-	
+
 
 	#if (openfl || flash || nme)
 	/**
@@ -119,83 +119,83 @@ class B2DebugDraw
 		return m_sprite;
 	}
 	#end
-	
-	
+
+
 	/**
 	* Set the draw scale
 	*/
 	public function setDrawScale(drawScale:Float) : Void {
-		m_drawScale = drawScale; 
+		m_drawScale = drawScale;
 	}
-	
+
 	/**
 	* Get the draw
 	*/
 	public function getDrawScale() : Float {
 		return m_drawScale;
 	}
-	
+
 	/**
 	* Set the line thickness
 	*/
 	public function setLineThickness(lineThickness:Float) : Void {
-		m_lineThickness = lineThickness; 
+		m_lineThickness = lineThickness;
 	}
-	
+
 	/**
 	* Get the line thickness
 	*/
 	public function getLineThickness() : Float {
 		return m_lineThickness;
 	}
-	
+
 	/**
 	* Set the alpha value used for lines
 	*/
 	public function setAlpha(alpha:Float) : Void {
-		m_alpha = alpha; 
+		m_alpha = alpha;
 	}
-	
+
 	/**
 	* Get the alpha value used for lines
 	*/
 	public function getAlpha() : Float {
 		return m_alpha;
 	}
-	
+
 	/**
 	* Set the alpha value used for fills
 	*/
 	public function setFillAlpha(alpha:Float) : Void {
-		m_fillAlpha = alpha; 
+		m_fillAlpha = alpha;
 	}
-	
+
 	/**
 	* Get the alpha value used for fills
 	*/
 	public function getFillAlpha() : Float {
 		return m_fillAlpha;
 	}
-	
+
 	/**
 	* Set the scale used for drawing XForms
 	*/
 	public function setXFormScale(xformScale:Float) : Void {
-		m_xformScale = xformScale; 
+		m_xformScale = xformScale;
 	}
-	
+
 	/**
 	* Get the scale used for drawing XForms
 	*/
 	public function getXFormScale() : Float {
 		return m_xformScale;
 	}
-	
+
 	/**
 	* Draw a closed polygon provided in CCW order.
 	*/
 	public function drawPolygon(vertices:Array <B2Vec2>, vertexCount:Int, color:B2Color) : Void{
-		
+
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha);
 		m_sprite.graphics.moveTo(vertices[0].x * m_drawScale, vertices[0].y * m_drawScale);
@@ -236,7 +236,7 @@ class B2DebugDraw
 		#end
 
 		#if js
-		
+
 		m_sprite.fillStyle = "rgb(" + color.r + "," + color.g + "," + color.b + ")";
 		m_sprite.lineWidth = m_lineThickness;
 		m_sprite.globalAlpha = m_alpha;
@@ -250,14 +250,14 @@ class B2DebugDraw
 		m_sprite.closePath();
 		m_sprite.fill();
 		#end
-		
+
 	}
 
 	/**
 	* Draw a circle.
 	*/
 	public function drawCircle(center:B2Vec2, radius:Float, color:B2Color) : Void{
-		
+
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha);
 		m_sprite.graphics.drawCircle(center.x * m_drawScale, center.y * m_drawScale, radius * m_drawScale);
@@ -272,14 +272,14 @@ class B2DebugDraw
 		m_sprite.arc(100,75,50,0,2*Math.PI);
 		m_sprite.stroke();
 		#end
-		
+
 	}
-	
+
 	/**
 	* Draw a solid circle.
 	*/
 	public function drawSolidCircle(center:B2Vec2, radius:Float, axis:B2Vec2, color:B2Color) : Void{
-		
+
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, color.color, m_alpha);
 		m_sprite.graphics.moveTo(0,0);
@@ -300,10 +300,10 @@ class B2DebugDraw
 		m_sprite.stroke();
 		m_sprite.fill();
 		#end
-		
+
 	}
 
-	
+
 	/**
 	* Draw a line segment.
 	*/
@@ -323,7 +323,7 @@ class B2DebugDraw
 		m_sprite.lineTo(p2.x * m_drawScale, p2.y * m_drawScale);
 		m_sprite.stroke();
 		#end
-		
+
 	}
 
 	/**
@@ -331,12 +331,12 @@ class B2DebugDraw
 	* @param xf a transform.
 	*/
 	public function drawTransform(xf:B2Transform) : Void{
-		
+
 		#if (openfl || flash || nme)
 		m_sprite.graphics.lineStyle(m_lineThickness, 0xff0000, m_alpha);
 		m_sprite.graphics.moveTo(xf.position.x * m_drawScale, xf.position.y * m_drawScale);
 		m_sprite.graphics.lineTo((xf.position.x + m_xformScale*xf.R.col1.x) * m_drawScale, (xf.position.y + m_xformScale*xf.R.col1.y) * m_drawScale);
-		
+
 		m_sprite.graphics.lineStyle(m_lineThickness, 0x00ff00, m_alpha);
 		m_sprite.graphics.moveTo(xf.position.x * m_drawScale, xf.position.y * m_drawScale);
 		m_sprite.graphics.lineTo((xf.position.x + m_xformScale * xf.R.col2.x) * m_drawScale, (xf.position.y + m_xformScale * xf.R.col2.y) * m_drawScale);
@@ -355,9 +355,9 @@ class B2DebugDraw
 		#end
 	}
 
-	
-	
-	
+
+
+
 	private var m_drawFlags:Int;
 	#if (openfl || flash || nme)
 	public var m_sprite:Sprite;
@@ -366,10 +366,10 @@ class B2DebugDraw
 	#end
 
 	private var m_drawScale:Float;
-	
+
 	private var m_lineThickness:Float;
 	private var m_alpha:Float;
 	private var m_fillAlpha:Float;
 	private var m_xformScale:Float;
-	
+
 }

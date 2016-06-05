@@ -17,8 +17,8 @@
 */
 
 
-	
-	
+
+
 import box2D.dynamics.*;
 import box2D.collision.*;
 import box2D.collision.shapes.*;
@@ -26,64 +26,64 @@ import box2D.dynamics.joints.*;
 import box2D.dynamics.contacts.*;
 import box2D.common.*;
 import box2D.common.math.*;
-	
-	class TestOneSidedPlatform extends Test {
-		
 
-		
+	class TestOneSidedPlatform extends Test {
+
+
+
 		public function new(){
 			super();
 			// Set Text field
 // 			Main.m_aboutText.text = "One Sided Platform\n" +
 // 				"Press: (c) create a shape, (d) destroy a shape.";
-				
+
 			var bd:B2BodyDef;
 			var body:B2Body;
-			
+
 			// Platform
 			{
 				bd = new B2BodyDef();
 				bd.position.set(10.0, 10.0);
 				body = m_world.createBody(bd);
-				
+
 				var polygon:B2PolygonShape = B2PolygonShape.asBox(3.0, 0.5);
 				m_platform = body.createFixture2(polygon);
-				
+
 				m_bottom = bd.position.y + 0.5;
 				m_top = bd.position.y - 0.5;
-				
+
 			}
-			
+
 			// Actor
 			{
 				bd = new B2BodyDef();
 				bd.type = 2;//B2Body.B2_dynamicBody;
 				bd.position.set(10.0, 12.0);
 				body = m_world.createBody(bd);
-				
+
 				m_radius = 0.5;
 				var circle:B2CircleShape = new B2CircleShape(m_radius);
 				m_character = body.createFixture2(circle, 1.0);
-				
+
 				m_state = e_unknown;
 			}
-			
+
 			m_world.setContactListener(new ContactListenerOneSidePlatform(this));
 		}
-		
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
-		
+
 		static private var e_unknown:Int = 0;
 		static private var e_above:Int = 1;
 		static private var e_below:Int = 2;
-		
+
 		public var m_radius:Float;
 		public var m_top:Float;
 		public var m_bottom:Float;
 		public var m_state:Int;
 		public var m_platform:B2Fixture;
 		public var m_character:B2Fixture;
-		
+
 	}

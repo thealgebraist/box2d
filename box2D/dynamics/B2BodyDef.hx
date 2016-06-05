@@ -35,7 +35,7 @@ class B2BodyDef
 	{
 		position = new B2Vec2();
 		linearVelocity = new B2Vec2 ();
-		
+
 		userData = null;
 		//position.set(0.0, 0.0);
 		angle = 0.0;
@@ -70,12 +70,12 @@ class B2BodyDef
 	 * The world angle of the body in radians.
 	 */
 	public var angle:Float;
-	
+
 	/**
 	 * The linear velocity of the body's origin in world co-ordinates.
 	 */
 	public var linearVelocity:B2Vec2;
-	
+
 	/**
 	 * The angular velocity of the body.
 	 */
@@ -118,17 +118,17 @@ class B2BodyDef
 	 * @warning You should use this flag sparingly since it increases processing time.
 	 */
 	public var bullet:Bool;
-	
+
 	/**
 	 * Does this body start out active?
-	 */ 
+	 */
 	public var active:Bool;
-	
+
 	/**
 	 * Use this to store application specific body data.
 	 */
 	public var userData:Dynamic;
-	
+
 	/**
 	 * Scales the inertia tensor.
 	 * @warning Experimental

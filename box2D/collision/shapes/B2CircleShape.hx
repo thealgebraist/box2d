@@ -35,14 +35,14 @@ import box2D.common.math.B2Vec2;
 */
 class B2CircleShape extends B2Shape
 {
-	override public function copy():B2Shape 
+	override public function copy():B2Shape
 	{
 		var s:B2Shape = new B2CircleShape();
 		s.set(this);
 		return s;
 	}
-	
-	override public function set(other:B2Shape):Void 
+
+	override public function set(other:B2Shape):Void
 	{
 		super.set(other);
 		if (Std.is (other, B2CircleShape))
@@ -51,7 +51,7 @@ class B2CircleShape extends B2Shape
 			m_p.setV(other2.m_p);
 		}
 	}
-	
+
 	/**
 	* @inheritDoc
 	*/
@@ -76,13 +76,13 @@ class B2CircleShape extends B2Shape
 		var tMat:B2Mat22 = transform.R;
 		var positionX:Float = transform.position.x + (tMat.col1.x * m_p.x + tMat.col2.x * m_p.y);
 		var positionY:Float = transform.position.y + (tMat.col1.y * m_p.x + tMat.col2.y * m_p.y);
-		
+
 		//b2Vec2 s = input.p1 - position;
 		var sX:Float = input.p1.x - positionX;
 		var sY:Float = input.p1.y - positionY;
 		//float32 b = b2Dot(s, s) - m_radius * m_radius;
 		var b:Float = (sX*sX + sY*sY) - m_radius * m_radius;
-		
+
 		/*// Does the segment start inside the circle?
 		if (b < 0.0)
 		{
@@ -90,7 +90,7 @@ class B2CircleShape extends B2Shape
 			output.hit = e_startsInsideCollide;
 			return;
 		}*/
-		
+
 		// Solve quadratic equation.
 		//b2Vec2 r = input.p2 - input.p1;
 		var rX:Float = input.p2.x - input.p1.x;
@@ -100,16 +100,16 @@ class B2CircleShape extends B2Shape
 		//float32 rr = b2Dot(r, r);
 		var rr:Float = (rX*rX + rY*rY);
 		var sigma:Float = c * c - rr * b;
-		
+
 		// Check for negative discriminant and short segment.
 		if (sigma < 0.0 || rr < B2Math.MIN_VALUE)
 		{
 			return false;
 		}
-		
+
 		// Find the point of intersection of the line with the circle.
 		var a:Float = -(c + Math.sqrt(sigma));
-		
+
 		// Is the intersection point on the segment?
 		if (0.0 <= a && a <= input.maxFraction * rr)
 		{
@@ -121,7 +121,7 @@ class B2CircleShape extends B2Shape
 			output.normal.normalize();
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -143,12 +143,12 @@ class B2CircleShape extends B2Shape
 	public override function computeMass(massData:B2MassData, density:Float) : Void{
 		massData.mass = density * B2Settings.b2_pi * m_radius * m_radius;
 		massData.center.setV(m_p);
-		
+
 		// inertia about the local origin
 		//massData.I = massData.mass * (0.5 * m_radius * m_radius + b2Dot(m_p, m_p));
 		massData.I = massData.mass * (0.5 * m_radius * m_radius + (m_p.x*m_p.x + m_p.y*m_p.y));
 	}
-	
+
 	/**
 	* @inheritDoc
 	*/
@@ -160,7 +160,7 @@ class B2CircleShape extends B2Shape
 	{
 		var p:B2Vec2 = B2Math.mulX(xf, m_p);
 		var l:Float = -(B2Math.dot(normal, p) - offset);
-		
+
 		if (l < -m_radius + B2Math.MIN_VALUE)
 		{
 			//Completely dry
@@ -172,16 +172,16 @@ class B2CircleShape extends B2Shape
 			c.setV(p);
 			return Math.PI * m_radius * m_radius;
 		}
-		
+
 		//Magic
 		var r2:Float = m_radius * m_radius;
 		var l2:Float = l * l;
 		var area:Float = r2 *( Math.asin(l / m_radius) + Math.PI / 2) + l * Math.sqrt( r2 - l2 );
 		var com:Float = -2 / 3 * Math.pow(r2 - l2, 1.5) / area;
-		
+
 		c.x = p.x + normal.x * com;
 		c.y = p.y + normal.y * com;
-		
+
 		return area;
 	}
 
@@ -191,14 +191,14 @@ class B2CircleShape extends B2Shape
 	public function getLocalPosition() : B2Vec2{
 		return m_p;
 	}
-	
+
 	/**
 	 * Set the local position of this circle in its parent body.
 	 */
 	public function setLocalPosition(position:B2Vec2):Void {
 		m_p.setV(position);
 	}
-	
+
 	/**
 	 * Get the radius of the circle
 	 */
@@ -206,7 +206,7 @@ class B2CircleShape extends B2Shape
 	{
 		return m_radius;
 	}
-	
+
 	/**
 	 * Set the radius of the circle
 	 */
@@ -224,5 +224,5 @@ class B2CircleShape extends B2Shape
 
 	// Local position in parent body
 	public var m_p:B2Vec2;
-	
+
 }

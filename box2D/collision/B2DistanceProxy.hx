@@ -31,7 +31,7 @@ import box2D.common.math.B2Vec2;
  * A distance proxy is used by the GJK algorithm.
  * It encapsulates any shape.
  */
-class B2DistanceProxy 
+class B2DistanceProxy
 {
 	/**
 	 * Initialize the proxy using the given shape. The shape
@@ -49,7 +49,7 @@ class B2DistanceProxy
 				m_count = 1;
 				m_radius = circle.m_radius;
 			}
-			
+
 			case B2ShapeType.POLYGON_SHAPE:
 			{
 				var polygon:B2PolygonShape =  cast (shape, B2PolygonShape);
@@ -57,12 +57,12 @@ class B2DistanceProxy
 				m_count = polygon.m_vertexCount;
 				m_radius = polygon.m_radius;
 			}
-			
+
 			default:
 			B2Settings.b2Assert(false);
 		}
 	}
-	
+
 	/**
 	 * Get the supporting vertex index in the given direction.
 	 */
@@ -81,7 +81,7 @@ class B2DistanceProxy
 		}
 		return bestIndex;
 	}
-	
+
 	/**
 	 * Get the supporting vertex in the given direction.
 	 */
@@ -107,7 +107,7 @@ class B2DistanceProxy
 	{
 		return m_count;
 	}
-	
+
 	/**
 	 * Get a vertex by index. Used by b2Distance.
 	 */
@@ -116,14 +116,14 @@ class B2DistanceProxy
 		B2Settings.b2Assert(0 <= index && index < m_count);
 		return m_vertices[index];
 	}
-	
-	
+
+
 	public function new () {
-		
+
 		m_vertices = new Array <B2Vec2> ();
-		
+
 	}
-	
+
 	public var m_vertices:Array <B2Vec2>;
 	public var m_count:Int = 0;
 	public var m_radius:Float = 0;

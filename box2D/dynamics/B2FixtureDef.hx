@@ -44,7 +44,7 @@ class B2FixtureDef
 		filter.groupIndex = 0;
 		isSensor = false;
 	}
-	
+
 	/**
 	 * The shape, this must be set. The shape will be cloned, so you
 	 * can create the shape on the stack.

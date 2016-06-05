@@ -7,7 +7,7 @@ package box2D.collision.shapes;
 	var CIRCLE_SHAPE = 1;
 	var POLYGON_SHAPE = 2;
 	var EDGE_SHAPE = 3;
-	
+
 }
 
 //static public var e_circleShape:Int = 	0;

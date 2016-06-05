@@ -24,21 +24,21 @@
 	import box2D.dynamics.contacts.*;
 	import box2D.common.*;
 	import box2D.common.math.*;
-	
+
 	class TestBridge extends Test{
-		
-		
+
+
 		public function new(){
-			
+
 			super();
 			// Set Text field
 			//Main.m_aboutText.text = "Bridge";
-			
+
 			var ground:B2Body = m_world.getGroundBody();
 			var i:Int;
 			var anchor:B2Vec2 = new B2Vec2();
 			var body:B2Body;
-			
+
 			var fixtureDef:B2FixtureDef = new B2FixtureDef();
 			// Bridge
 			{
@@ -48,16 +48,16 @@
 				fixtureDef.shape = sd;
 				fixtureDef.density = 20.0;
 				fixtureDef.friction = 0.2;
-				
+
 				var bd:B2BodyDef = new B2BodyDef();
 				bd.type = B2Body.b2_dynamicBody;
-				
+
 				var jd:B2RevoluteJointDef = new B2RevoluteJointDef();
 				var numPlanks:Int = 10;
 				jd.lowerAngle = -15 / (180/Math.PI);
 				jd.upperAngle = 15 / (180/Math.PI);
 				jd.enableLimit = true;
-				
+
 				var prevBody:B2Body = ground;
 				//for (i = 0; i < numPlanks; ++i)
 				for (i in 0...numPlanks)
@@ -65,19 +65,19 @@
 					bd.position.set((100 + 22 + 44 * i) / m_physScale, 250 / m_physScale);
 					body = m_world.createBody(bd);
 					body.createFixture(fixtureDef);
-					
+
 					anchor.set((100 + 44 * i) / m_physScale, 250 / m_physScale);
 					jd.initialize(prevBody, body, anchor);
 					m_world.createJoint(jd);
-					
+
 					prevBody = body;
 				}
-				
+
 				anchor.set((100 + 44 * numPlanks) / m_physScale, 250 / m_physScale);
 				jd.initialize(prevBody, ground, anchor);
 				m_world.createJoint(jd);
 			}
-			
+
 			// Spawn in a bunch of crap
 			//for (i = 0; i < 5; i++)
 			for (i in 0...5)
@@ -95,7 +95,7 @@
 				bodyDef.angle = Math.random() * Math.PI;
 				body = m_world.createBody(bodyDef);
 				body.createFixture(fixtureDef);
-				
+
 			}
 //			for (i = 0; i < 5; i++)
 			for (i in 0...5)
@@ -112,7 +112,7 @@
 				bodyDefC.angle = Math.random() * Math.PI;
 				body = m_world.createBody(bodyDefC);
 				body.createFixture(fixtureDef);
-				
+
 			}
 			var j:Int;
 // 			for (i = 0; i < 15; i++)
@@ -171,11 +171,11 @@
 				body = m_world.createBody(bodyDefP);
 				body.createFixture(fixtureDef);
 			}
-			
+
 		}
-		
-		
+
+
 		//======================
-		// Member Data 
+		// Member Data
 		//======================
 	}

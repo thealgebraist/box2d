@@ -17,7 +17,7 @@
 */
 
 package box2D.dynamics.joints;
-	
+
 
 import box2D.common.B2Settings;
 import box2D.common.math.B2Mat22;
@@ -54,7 +54,7 @@ class B2WeldJoint extends B2Joint
 	public override function getAnchorB():B2Vec2{
 		return m_bodyB.getWorldPoint(m_localAnchorB);
 	}
-	
+
 	/** @inheritDoc */
 	public override function getReactionForce(inv_dt:Float):B2Vec2
 	{
@@ -66,19 +66,19 @@ class B2WeldJoint extends B2Joint
 	{
 		return inv_dt * m_impulse.z;
 	}
-	
+
 	//--------------- Internals Below -------------------
 
 	/** @private */
 	public function new (def:B2WeldJointDef){
 		super(def);
-		
+
 		m_localAnchorA = new B2Vec2();
 		m_localAnchorB = new B2Vec2();
 		m_impulse = new B2Vec3();
 		m_mass = new B2Mat33();
-	
-		
+
+
 		m_localAnchorA.setV(def.localAnchorA);
 		m_localAnchorB.setV(def.localAnchorB);
 		m_referenceAngle = def.referenceAngle;
@@ -90,7 +90,7 @@ class B2WeldJoint extends B2Joint
 	public override function initVelocityConstraints(step:B2TimeStep) : Void {
 		var tMat:B2Mat22;
 		var tX:Float;
-		
+
 		var bA:B2Body = m_bodyA;
 		var bB:B2Body= m_bodyB;
 
@@ -123,7 +123,7 @@ class B2WeldJoint extends B2Joint
 		var mB:Float = bB.m_invMass;
 		var iA:Float = bA.m_invI;
 		var iB:Float = bB.m_invI;
-		
+
 		m_mass.col1.x = mA + mB + rAY * rAY * iA + rBY * rBY * iB;
 		m_mass.col2.x = -rAY * rAX * iA - rBY * rBX * iB;
 		m_mass.col3.x = -rAY * iA - rBY * iB;
@@ -133,7 +133,7 @@ class B2WeldJoint extends B2Joint
 		m_mass.col1.z = m_mass.col3.x;
 		m_mass.col2.z = m_mass.col3.y;
 		m_mass.col3.z = iA + iB;
-		
+
 		if (step.warmStarting)
 		{
 			// Scale impulses to support a variable time step.
@@ -155,9 +155,9 @@ class B2WeldJoint extends B2Joint
 		}
 
 	}
-	
-	
-	
+
+
+
 	public override function solveVelocityConstraints(step:B2TimeStep): Void{
 		//B2_NOT_USED(step);
 		var tMat:B2Mat22;
@@ -191,16 +191,16 @@ class B2WeldJoint extends B2Joint
 		rBY = (tMat.col1.y * rBX + tMat.col2.y * rBY);
 		rBX = tX;
 
-		
+
 		// Solve point-to-point constraint
 		var Cdot1X:Float = vB.x - wB * rBY - vA.x + wA * rAY;
 		var Cdot1Y:Float = vB.y + wB * rBX - vA.y - wA * rAX;
 		var Cdot2:Float = wB - wA;
 		var impulse:B2Vec3 = new B2Vec3();
 		m_mass.solve33(impulse, -Cdot1X, -Cdot1Y, -Cdot2);
-		
+
 		m_impulse.add(impulse);
-		
+
 		vA.x -= mA * impulse.x;
 		vA.y -= mA * impulse.y;
 		wA -= iA * (rAX * impulse.y - rAY * impulse.x + impulse.z);
@@ -216,13 +216,13 @@ class B2WeldJoint extends B2Joint
 		bB.m_angularVelocity = wB;
 
 	}
-	
+
 	public override function solvePositionConstraints(baumgarte:Float):Bool
 	{
 		//B2_NOT_USED(baumgarte);
 				var tMat:B2Mat22;
 		var tX:Float;
-		
+
 		var bA:B2Body = m_bodyA;
 		var bB:B2Body= m_bodyB;
 
@@ -255,7 +255,7 @@ class B2WeldJoint extends B2Joint
 		var mB:Float = bB.m_invMass;
 		var iA:Float = bA.m_invI;
 		var iB:Float = bB.m_invI;
-		
+
 		//b2Vec2 C1 =  bB->m_sweep.c + rB - bA->m_sweep.c - rA;
 		var C1X:Float =  bB.m_sweep.c.x + rBX - bA.m_sweep.c.x - rAX;
 		var C1Y:Float =  bB.m_sweep.c.y + rBY - bA.m_sweep.c.y - rAY;
@@ -270,7 +270,7 @@ class B2WeldJoint extends B2Joint
 			iA *= 1.0;
 			iB *= 1.0;
 		}
-		
+
 		m_mass.col1.x = mA + mB + rAY * rAY * iA + rBY * rBY * iB;
 		m_mass.col2.x = -rAY * rAX * iA - rBY * rBX * iB;
 		m_mass.col3.x = -rAY * iA - rBY * iB;
@@ -280,10 +280,10 @@ class B2WeldJoint extends B2Joint
 		m_mass.col1.z = m_mass.col3.x;
 		m_mass.col2.z = m_mass.col3.y;
 		m_mass.col3.z = iA + iB;
-		
+
 		var impulse:B2Vec3 = new B2Vec3();
 		m_mass.solve33(impulse, -C1X, -C1Y, -C2);
-		
+
 
 		bA.m_sweep.c.x -= mA * impulse.x;
 		bA.m_sweep.c.y -= mA * impulse.y;
@@ -303,7 +303,7 @@ class B2WeldJoint extends B2Joint
 	private var m_localAnchorA:B2Vec2;
 	private var m_localAnchorB:B2Vec2;
 	private var m_referenceAngle:Float;
-	
+
 	private var m_impulse:B2Vec3;
 	private var m_mass:B2Mat33;
 }
