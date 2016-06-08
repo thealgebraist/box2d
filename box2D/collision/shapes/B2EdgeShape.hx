@@ -36,6 +36,16 @@ import box2D.common.math.B2Vec2;
  */
 class B2EdgeShape extends B2Shape
 {
+
+	public override function copy()
+	{
+		// var s:B2EdgeShape = new B2EdgeShape(v1, v2);
+		// s.set(this);
+		// return s;
+		throw 'Not implemented';
+		return new B2EdgeShape(m_v1,m_v2);
+	}
+
 	/**
 	* Returns false. Edges cannot contain points.
 	*/

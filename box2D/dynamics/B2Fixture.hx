@@ -317,6 +317,9 @@ class B2Fixture
 		//b2Assert(m_proxyId == b2BroadPhase::e_nullProxy);
 
 		// Create proxy in the broad-phase.
+		// trace('aabb = ' + m_aabb);
+		// trace('xf = ' + xf);
+		// trace('shape = ' + m_shape);
 		m_shape.computeAABB(m_aabb, xf);
 		m_proxy = broadPhase.createProxy(m_aabb, this);
 	}
