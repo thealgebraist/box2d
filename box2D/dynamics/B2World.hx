@@ -49,6 +49,7 @@ import box2D.dynamics.joints.B2PulleyJoint;
 * The world class manages all physics entities, dynamic simulation,
 * and asynchronous queries.
 */
+// @:build(Profiler.buildAll())
 class B2World
 {
 
@@ -1080,8 +1081,9 @@ class B2World
 
 		// Find TOI events and solve them.
 
+		var iter = 0;
 
-		while (true)
+		while (iter++ < 10)
 		{
 			// Find the first TOI.
 			var minContact:B2Contact = null;
